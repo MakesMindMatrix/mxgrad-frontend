@@ -1,0 +1,61 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { gccApi } from '@/lib/api';
+import type { Requirement } from '@/lib/api';
+import { Button } from '@/components/ui/button';
+import { Plus, FileText } from 'lucide-react';
+
+export default function GccRequirements() {
+  const [list, setList] = useState<Requirement[]>([]);
+
+  useEffect(() => {
+    gccApi.getRequirements().then(setList).catch(() => setList([]));
+  }, []);
+
+  return (
+    <div className="min-h-screen pt-6 pb-16">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold">Tech requirements</h1>
+          <Link to="/gcc/requirements/new">
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              New requirement
+            </Button>
+          </Link>
+        </div>
+
+        {list.length === 0 ? (
+          <div className="page-card p-12 text-center text-muted-foreground">
+            <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>No requirements yet. Post your first tech need from deep-tech startups.</p>
+            <Link to="/gcc/requirements/new" className="mt-4 inline-block">
+              <Button>Post requirement</Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {list.map((r) => (
+              <Link key={r.id} to={`/gcc/requirements/${r.id}`} className="block">
+                <div className="page-card p-6 flex items-center justify-between hover:border-blue-400 transition-colors">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs text-muted-foreground font-mono">{r.anonymous_id || r.id.slice(0, 8)}</span>
+                      <span className="chip chip-default">{r.category}</span>
+                    </div>
+                    <h3 className="font-semibold">{r.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{r.description}</p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {Number(r.interest_count) || 0} interest(s) · {r.status}
+                    </p>
+                  </div>
+                  <Button variant="ghost" size="sm">View</Button>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Navy palette */
+:root {
+  --navy-900: 221 39% 11%;
+  --navy-800: 221 39% 15%;
+  --navy-700: 221 39% 20%;
+  --navy-600: 221 39% 28%;
+}
+
+/* Light theme (default): navy nav/sidebar, white body */
+.theme-light {
+  --app-nav-bg: hsl(var(--navy-900));
+  --app-nav-text: 0 0% 100%;
+  --app-nav-text-muted: 0 0% 85%;
+  --app-sidebar-bg: hsl(var(--navy-900));
+  --app-sidebar-text: 0 0% 100%;
+  --app-sidebar-text-muted: 0 0% 80%;
+  --page-bg: 0 0% 100%;
+  --page-foreground: 222 47% 11%;
+  --page-muted: 215 16% 47%;
+  --page-border: 214 32% 91%;
+  --page-card: 0 0% 100%;
+  --page-card-border: 214 32% 91%;
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --muted: 215 16% 45%;
+  --muted-foreground: 215 16% 47%;
+  --border: 214 32% 91%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 32% 91%;
+  --secondary-foreground: 222 47% 11%;
+  --destructive: 0 72% 51%;
+  --success: 142 71% 45%;
+  --warning: 38 92% 50%;
+  --radius: 0.5rem;
+  --input: 214 32% 91%;
+  --ring: 221 83% 53%;
+}
+
+/* Dark theme: complete navy / dark */
+.theme-dark {
+  --app-nav-bg: hsl(var(--navy-900));
+  --app-nav-text: 0 0% 98%;
+  --app-nav-text-muted: 0 0% 70%;
+  --app-sidebar-bg: hsl(var(--navy-800));
+  --app-sidebar-text: 0 0% 98%;
+  --app-sidebar-text-muted: 0 0% 75%;
+  --page-bg: 222 47% 11%;
+  --page-foreground: 0 0% 98%;
+  --page-muted: 215 20% 65%;
+  --page-border: 215 28% 22%;
+  --page-card: 222 39% 14%;
+  --page-card-border: 215 28% 22%;
+  --background: 222 47% 11%;
+  --foreground: 0 0% 98%;
+  --muted: 215 28% 18%;
+  --muted-foreground: 215 20% 65%;
+  --border: 215 28% 22%;
+  --card: 222 39% 14%;
+  --card-foreground: 0 0% 98%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 228 25% 6%;
+  --secondary: 215 28% 18%;
+  --secondary-foreground: 0 0% 98%;
+  --destructive: 0 72% 51%;
+  --success: 142 71% 45%;
+  --warning: 38 92% 50%;
+  --radius: 0.5rem;
+  --input: 215 28% 22%;
+  --ring: 217 91% 60%;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hero network lines animation */
+@keyframes hero-grid-move {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(2%, 1%); }
+}
+
+/* Hide scrollbars everywhere but keep content scrollable */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--page-border));
+  }
+  body {
+    background-color: hsl(var(--page-bg));
+    color: hsl(var(--page-foreground));
+    font-family: system-ui, -apple-system, sans-serif;
+    antialiased: true;
+  }
+}
+
+@layer utilities {
+  .chip {
+    @apply inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium;
+  }
+  .chip-default {
+    background-color: hsl(var(--page-border));
+    color: hsl(var(--page-muted));
+  }
+  .chip-ai { @apply bg-blue-500/15 text-blue-600 border border-blue-200; }
+  .chip-devops { @apply bg-emerald-500/15 text-emerald-700 border border-emerald-200; }
+  .chip-cloud { @apply bg-sky-500/15 text-sky-600 border border-sky-200; }
+  .chip-data { @apply bg-violet-500/15 text-violet-600 border border-violet-200; }
+  .chip-security { @apply bg-amber-500/15 text-amber-700 border border-amber-200; }
+  .theme-dark .chip-ai { @apply bg-blue-500/25 text-blue-300 border-blue-500/40; }
+  .theme-dark .chip-devops { @apply bg-emerald-500/25 text-emerald-300 border-emerald-500/40; }
+  .theme-dark .chip-cloud { @apply bg-sky-500/25 text-sky-300 border-sky-500/40; }
+  .theme-dark .chip-data { @apply bg-violet-500/25 text-violet-300 border-violet-500/40; }
+  .theme-dark .chip-security { @apply bg-amber-500/25 text-amber-300 border-amber-500/40; }
+  .bg-page { background-color: hsl(var(--page-bg)); }
+  .bg-nav { background-color: var(--app-nav-bg); }
+  .bg-sidebar { background-color: var(--app-sidebar-bg); }
+  .text-nav { color: hsl(var(--app-nav-text)); }
+  .text-sidebar { color: hsl(var(--app-sidebar-text)); }
+  .page-card {
+    background-color: hsl(var(--page-card));
+    border: 1px solid hsl(var(--page-card-border));
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .theme-dark .page-card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .page-card-hover {
+    background-color: hsl(var(--page-card));
+    border: 1px solid hsl(var(--page-card-border));
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .page-card-hover:hover {
+    border-color: hsl(217 91% 60% / 0.5);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .theme-dark .page-card-hover {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .theme-dark .page-card-hover:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+}
