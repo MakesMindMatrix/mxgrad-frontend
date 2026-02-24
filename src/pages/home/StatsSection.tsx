@@ -21,7 +21,7 @@ const ITEMS = [
 
 export default function StatsSection() {
   return (
-    <section className="py-20 bg-slate-800">
+    <section className="py-20 bg-home-navy">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {ITEMS.map((item, i) => (

@@ -27,7 +27,7 @@ export default function HowItWorksSection() {
         </motion.div>
 
         {/* Desktop: vertical dotted line with alternating left/right cards - shrunk */}
-        <div className="relative hidden md:block max-w-4xl mx-auto">
+        <div className="relative hidden md:block max-w-5xl mx-auto">
           <div
             className="absolute left-1/2 top-0 bottom-0 w-0 -translate-x-1/2 border-l-2 border-home-accent/40 pointer-events-none z-0"
             style={{ borderStyle: 'dotted' }}
@@ -54,7 +54,7 @@ export default function HowItWorksSection() {
                           boxShadow: '0 20px 40px -12px rgba(11, 31, 58, 0.15), 0 0 0 1px rgba(37, 99, 235, 0.08)',
                         }}
                         transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-                        className="relative w-full max-w-[260px] p-5 rounded-xl border border-home-text-dark/10 bg-white shadow-lg hover:border-home-accent/20 transition-all duration-300 cursor-default group"
+                        className="relative w-full max-w-[340px] p-5 rounded-xl border border-home-text-dark/10 bg-white shadow-lg hover:border-home-accent/20 transition-all duration-300 cursor-default group"
                       >
                         <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-home-accent/[0.07] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                         <div className="relative flex flex-col items-center text-center">
@@ -80,7 +80,7 @@ export default function HowItWorksSection() {
                           boxShadow: '0 20px 40px -12px rgba(11, 31, 58, 0.15), 0 0 0 1px rgba(37, 99, 235, 0.08)',
                         }}
                         transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-                        className="relative w-full max-w-[260px] p-5 rounded-xl border border-home-text-dark/10 bg-white shadow-lg hover:border-home-accent/20 transition-all duration-300 cursor-default group"
+                        className="relative w-full max-w-[340px] p-5 rounded-xl border border-home-text-dark/10 bg-white shadow-lg hover:border-home-accent/20 transition-all duration-300 cursor-default group"
                       >
                         <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-home-accent/[0.07] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                         <div className="relative flex flex-col items-center text-center">
