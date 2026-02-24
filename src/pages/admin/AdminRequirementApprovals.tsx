@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { adminApi } from '@/lib/api';
 import type { RequirementApprovalItem } from '@/lib/api';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Check, X, MessageSquareReply, RefreshCw } from 'lucide-react';
 
 export default function AdminRequirementApprovals() {
@@ -11,6 +12,8 @@ export default function AdminRequirementApprovals() {
   const [remarksModal, setRemarksModal] = useState<'send-back' | 'reject' | null>(null);
   const [remarksReqId, setRemarksReqId] = useState<string | null>(null);
   const [remarksText, setRemarksText] = useState('');
+  const [confirmApproveId, setConfirmApproveId] = useState<string | null>(null);
+  const [confirmRemarksSubmit, setConfirmRemarksSubmit] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -96,7 +99,7 @@ export default function AdminRequirementApprovals() {
                       <Button
                         size="sm"
                         className="gap-1 text-green-600 bg-green-500/20 hover:bg-green-500/30"
-                        onClick={() => handleApprove(r.id)}
+                        onClick={() => setConfirmApproveId(r.id)}
                         disabled={actionId !== null}
                       >
                         <Check className="h-4 w-4" />
@@ -148,7 +151,7 @@ export default function AdminRequirementApprovals() {
                 onChange={(e) => setRemarksText(e.target.value)}
               />
               <div className="flex gap-2 mt-4">
-                <Button onClick={submitRemarks} disabled={actionId !== null}>
+                <Button onClick={() => setConfirmRemarksSubmit(true)} disabled={actionId !== null}>
                   {remarksModal === 'send-back' ? 'Send back' : 'Reject'}
                 </Button>
                 <Button
@@ -164,6 +167,41 @@ export default function AdminRequirementApprovals() {
               </div>
             </div>
           </div>
+        )}
+
+        {confirmApproveId && (
+          <ConfirmDialog
+            open
+            onClose={() => setConfirmApproveId(null)}
+            title="Approve requirement?"
+            message="Are you sure you want to approve this requirement? It will become visible to startups."
+            confirmLabel="Yes, approve"
+            cancelLabel="No"
+            onConfirm={async () => {
+              await handleApprove(confirmApproveId);
+              setConfirmApproveId(null);
+            }}
+          />
+        )}
+
+        {confirmRemarksSubmit && remarksModal && (
+          <ConfirmDialog
+            open
+            onClose={() => setConfirmRemarksSubmit(false)}
+            title={remarksModal === 'send-back' ? 'Send back with remarks?' : 'Reject with remarks?'}
+            message={
+              remarksModal === 'send-back'
+                ? 'Are you sure you want to send this requirement back to the GCC with your remarks?'
+                : 'Are you sure you want to reject this requirement? The GCC will see your remarks.'
+            }
+            confirmLabel={remarksModal === 'send-back' ? 'Yes, send back' : 'Yes, reject'}
+            cancelLabel="No"
+            variant="destructive"
+            onConfirm={async () => {
+              await submitRemarks();
+              setConfirmRemarksSubmit(false);
+            }}
+          />
         )}
       </div>
     </div>

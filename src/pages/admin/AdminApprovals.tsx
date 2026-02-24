@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react';
 import { adminApi } from '@/lib/api';
 import type { User } from '@/lib/api';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Check, X, RefreshCw } from 'lucide-react';
+
+type ConfirmUserAction = { action: 'approve' | 'reject'; user: User } | null;
 
 export default function AdminApprovals() {
   const [pending, setPending] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmUser, setConfirmUser] = useState<ConfirmUserAction>(null);
 
   const load = () => {
     setLoading(true);
@@ -70,11 +74,20 @@ export default function AdminApprovals() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="gap-1 text-destructive" onClick={() => handleReject(u.id)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1 text-destructive"
+                    onClick={() => setConfirmUser({ action: 'reject', user: u })}
+                  >
                     <X className="h-4 w-4" />
                     Reject
                   </Button>
-                  <Button size="sm" className="gap-1 text-green-600 bg-green-500/20 hover:bg-green-500/30" onClick={() => handleApprove(u.id)}>
+                  <Button
+                    size="sm"
+                    className="gap-1 text-green-600 bg-green-500/20 hover:bg-green-500/30"
+                    onClick={() => setConfirmUser({ action: 'approve', user: u })}
+                  >
                     <Check className="h-4 w-4" />
                     Approve
                   </Button>
@@ -82,6 +95,27 @@ export default function AdminApprovals() {
               </div>
             ))}
           </div>
+        )}
+
+        {confirmUser && (
+          <ConfirmDialog
+            open
+            onClose={() => setConfirmUser(null)}
+            title={confirmUser.action === 'approve' ? 'Approve this user?' : 'Reject this user?'}
+            message={
+              confirmUser.action === 'approve'
+                ? `Are you sure you want to approve ${confirmUser.user.name}? They will be able to log in.`
+                : `Are you sure you want to reject ${confirmUser.user.name}? They will not be able to log in.`
+            }
+            confirmLabel={confirmUser.action === 'approve' ? 'Yes, approve' : 'Yes, reject'}
+            cancelLabel="No"
+            variant={confirmUser.action === 'reject' ? 'destructive' : 'default'}
+            onConfirm={async () => {
+              if (confirmUser.action === 'approve') await handleApprove(confirmUser.user.id);
+              else await handleReject(confirmUser.user.id);
+              setConfirmUser(null);
+            }}
+          />
         )}
       </div>
     </div>

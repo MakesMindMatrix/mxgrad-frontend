@@ -31,6 +31,7 @@ import AdminUsers from '@/pages/admin/AdminUsers';
 import AdminActivities from '@/pages/admin/AdminActivities';
 import AdminActiveProjects from '@/pages/admin/AdminActiveProjects';
 import AdminRequirementApprovals from '@/pages/admin/AdminRequirementApprovals';
+import AdminEoiApprovals from '@/pages/admin/AdminEoiApprovals';
 
 function DashboardRoute({ children, allowedRoles, requireAdmin }: { children: React.ReactNode; allowedRoles?: ('ADMIN' | 'GCC' | 'STARTUP')[]; requireAdmin?: boolean }) {
   return (
@@ -83,6 +84,7 @@ export default function App() {
         <Route path="/admin/explore" element={<DashboardRoute requireAdmin><Explore /></DashboardRoute>} />
         <Route path="/admin/approvals" element={<DashboardRoute requireAdmin><AdminApprovals /></DashboardRoute>} />
         <Route path="/admin/requirement-approvals" element={<DashboardRoute requireAdmin><AdminRequirementApprovals /></DashboardRoute>} />
+        <Route path="/admin/eoi-approvals" element={<DashboardRoute requireAdmin><AdminEoiApprovals /></DashboardRoute>} />
         <Route path="/admin/users" element={<DashboardRoute requireAdmin><AdminUsers /></DashboardRoute>} />
         <Route path="/admin/activities" element={<DashboardRoute requireAdmin><AdminActivities /></DashboardRoute>} />
         <Route path="/admin/projects" element={<DashboardRoute requireAdmin><AdminActiveProjects /></DashboardRoute>} />

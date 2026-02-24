@@ -10,12 +10,19 @@ const CHIP_CLASS: Record<string, string> = {
   Security: 'chip-security',
 };
 
+const STATUS_LABEL: Record<string, string> = {
+  OPEN: 'Open',
+  IN_PROGRESS: 'On going',
+};
+
 interface Props {
   requirement: Requirement;
   onExpressInterest?: (req: Requirement) => void;
+  /** When true (admin panel), show status instead of Express interest button */
+  adminView?: boolean;
 }
 
-export default function RequirementCard({ requirement, onExpressInterest }: Props) {
+export default function RequirementCard({ requirement, onExpressInterest, adminView }: Props) {
   const chipClass = CHIP_CLASS[requirement.category] || 'chip-default';
   const budgetStr =
     requirement.budget_min != null || requirement.budget_max != null
@@ -74,11 +81,15 @@ export default function RequirementCard({ requirement, onExpressInterest }: Prop
 
       <div className="flex items-center justify-between pt-2 border-t border-border/50">
         <span className="text-xs text-muted-foreground">{requirement.industry_type || '—'}</span>
-        {onExpressInterest && (
+        {adminView ? (
+          <span className="chip chip-default text-xs">
+            Status: {STATUS_LABEL[requirement.status] || requirement.status || '—'}
+          </span>
+        ) : onExpressInterest ? (
           <Button size="sm" onClick={() => onExpressInterest(requirement)}>
             Express interest
           </Button>
-        )}
+        ) : null}
       </div>
     </div>
   );

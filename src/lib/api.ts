@@ -79,6 +79,18 @@ export interface RequirementApprovalItem {
   gcc_email: string;
 }
 
+export interface EoiApprovalItem {
+  id: string;
+  requirement_id: string;
+  message: string;
+  status: string;
+  created_at: string;
+  updated_at?: string;
+  requirement_title: string;
+  startup_name: string;
+  startup_email: string;
+}
+
 export const adminApi = {
   getPendingApprovals: () => api<User[]>('/admin/approvals'),
   approve: (userId: string) => api<User>(`/admin/approvals/${userId}/approve`, { method: 'POST' }),
@@ -119,6 +131,19 @@ export const adminApi = {
       `/admin/requirement-approvals/${requirementId}/reject`,
       { method: 'POST', body: JSON.stringify({ remarks }) }
     ),
+  getExploreRequirements: (params?: { category?: string; search?: string }) => {
+    const q = new URLSearchParams();
+    if (params?.category && params.category !== 'All') q.set('category', params.category);
+    if (params?.search?.trim()) q.set('search', params.search.trim());
+    return api<Requirement[]>(`/admin/explore-requirements${q.toString() ? `?${q}` : ''}`);
+  },
+  getEoiApprovals: () => api<EoiApprovalItem[]>('/admin/eoi-approvals'),
+  approveEoi: (eoiId: string) =>
+    api<{ id: string; status: string }>(`/admin/eoi-approvals/${eoiId}/approve`, { method: 'POST' }),
+  rejectEoi: (eoiId: string) =>
+    api<{ id: string; status: string }>(`/admin/eoi-approvals/${eoiId}/reject`, { method: 'POST' }),
+  deleteEoi: (eoiId: string) =>
+    api<void>(`/admin/eoi-approvals/${eoiId}`, { method: 'DELETE' }),
 };
 
 // GCC

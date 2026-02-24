@@ -8,6 +8,44 @@ import { Users, Building2, Rocket, Check, X, Pencil, Trash2, RefreshCw } from 'l
 
 type RoleFilter = 'ALL' | 'GCC' | 'STARTUP';
 
+function profileKeyToLabel(key: string): string {
+  return key
+    .split('_')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+}
+
+function formatProfileValue(value: unknown): string {
+  if (value == null || value === '') return '—';
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
+    try {
+      return new Date(value).toLocaleString();
+    } catch {
+      return value;
+    }
+  }
+  if (Array.isArray(value)) return value.length ? value.join(', ') : '—';
+  if (typeof value === 'object') return JSON.stringify(value);
+  return String(value);
+}
+
+function ProfileDataFields({ profile }: { profile: Record<string, unknown> }) {
+  const skipKeys = new Set(['id', 'user_id']);
+  const entries = Object.entries(profile)
+    .filter(([k]) => !skipKeys.has(k))
+    .sort(([a], [b]) => a.localeCompare(b));
+  return (
+    <>
+      {entries.map(([key, value]) => (
+        <div key={key} className="grid gap-1">
+          <div className="text-sm text-muted-foreground">{profileKeyToLabel(key)}</div>
+          <div className="text-foreground text-sm break-words">{formatProfileValue(value)}</div>
+        </div>
+      ))}
+    </>
+  );
+}
+
 export default function AdminUsers() {
   const [filter, setFilter] = useState<RoleFilter>('ALL');
   const [users, setUsers] = useState<User[]>([]);
@@ -344,10 +382,10 @@ export default function AdminUsers() {
                   )}
                   {detail.profile && Object.keys(detail.profile).length > 0 && (
                     <div className="border-t border-border pt-4 mt-4">
-                      <div className="text-sm font-medium text-muted-foreground mb-2">Profile data</div>
-                      <pre className="text-xs bg-muted/50 text-foreground p-3 rounded-lg overflow-x-auto max-h-48 overflow-y-auto">
-                        {JSON.stringify(detail.profile, null, 2)}
-                      </pre>
+                      <div className="text-sm font-medium text-muted-foreground mb-3">Profile data</div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 max-h-64 overflow-y-auto pr-2">
+                        <ProfileDataFields profile={detail.profile as Record<string, unknown>} />
+                      </div>
                     </div>
                   )}
                   <div className="flex flex-wrap gap-2 pt-4 border-t border-border">

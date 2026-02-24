@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { requirementsApi } from '@/lib/api';
+import { requirementsApi, adminApi } from '@/lib/api';
 import type { Requirement } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 import RequirementCard from '@/components/RequirementCard';
@@ -14,6 +14,7 @@ const CATEGORIES = ['All', 'AI', 'DevOps', 'Cloud', 'Data', 'Security', 'Blockch
 export default function Explore() {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const isAdminView = user?.role === 'ADMIN';
 
   // Logged-in GCC/Startup should use their role-specific explore pages
   useEffect(() => {
@@ -43,12 +44,14 @@ export default function Explore() {
     if (category && category !== 'All') params.category = category;
     if (search.trim()) params.search = search.trim();
     setLoading(true);
-    requirementsApi
-      .list(params)
+    const fetchList = isAdminView
+      ? () => adminApi.getExploreRequirements(params)
+      : () => requirementsApi.list(params);
+    fetchList()
       .then(setRequirements)
       .catch(() => setRequirements([]))
       .finally(() => setLoading(false));
-  }, [category, search]);
+  }, [category, search, isAdminView]);
 
   const handleExpressInterest = (req: Requirement) => {
     setSelected(req);
@@ -69,7 +72,11 @@ export default function Explore() {
       <div className="container mx-auto px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Explore</h1>
-          <p className="text-muted-foreground">Browse tech requirements from GCCs. Log in as a startup to express interest.</p>
+          <p className="text-muted-foreground">
+            {isAdminView
+              ? 'Browse tech requirements from GCCs. Status and interest counts are shown.'
+              : 'Browse tech requirements from GCCs. Log in as a startup to express interest.'}
+          </p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -107,7 +114,8 @@ export default function Explore() {
                 <RequirementCard
                   key={r.id}
                   requirement={r}
-                  onExpressInterest={isAuthenticated ? handleExpressInterest : undefined}
+                  onExpressInterest={!isAdminView && isAuthenticated ? handleExpressInterest : undefined}
+                  adminView={isAdminView}
                 />
               ))}
             </div>
@@ -120,11 +128,13 @@ export default function Explore() {
         )}
       </div>
 
-      <ExpressInterestDialog
-        requirement={selected}
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-      />
+      {!isAdminView && (
+        <ExpressInterestDialog
+          requirement={selected}
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+        />
+      )}
     </div>
   );
 }
