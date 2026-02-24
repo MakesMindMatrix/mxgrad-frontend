@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { gccApi } from '@/lib/api';
+import { gccApi, ApiError } from '@/lib/api';
 import type { GccProfile } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -143,6 +143,17 @@ export default function GccProfile() {
       setError('Please enter a valid work email for alternate contact.');
       return;
     }
+    const digitsOnly = (s: string) => /^\d+$/.test(s.replace(/\s/g, '').replace(/^\+/, '').replace(/-/g, ''));
+    if (editable.mobile_secondary && !digitsOnly(editable.mobile_secondary)) {
+      setSaving(false);
+      setError('Mobile should contain only digits (and optional + or spaces).');
+      return;
+    }
+    if (editable.phone && !digitsOnly(editable.phone)) {
+      setSaving(false);
+      setError('Phone should contain only digits (and optional + or spaces).');
+      return;
+    }
 
     try {
       const payload: Partial<GccProfile> = {
@@ -198,8 +209,8 @@ export default function GccProfile() {
       });
       setMessage('Profile updated.');
       setEditMode(false);
-    } catch {
-      setError('Failed to save profile.');
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Failed to save profile.');
     } finally {
       setSaving(false);
     }

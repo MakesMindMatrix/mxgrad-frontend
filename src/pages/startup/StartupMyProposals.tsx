@@ -4,7 +4,9 @@ import { requirementsApi } from '@/lib/api';
 import type { Requirement, ExpressionOfInterest } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import ExpressInterestDialog, { type ExpressInterestInitialValues } from '@/components/ExpressInterestDialog';
-import { FileText, Eye, Pencil } from 'lucide-react';
+import { FileText, Eye, Pencil, X } from 'lucide-react';
+
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 export default function StartupMyProposals() {
   const [list, setList] = useState<ExpressionOfInterest[]>([]);
@@ -12,6 +14,7 @@ export default function StartupMyProposals() {
   const [editEoi, setEditEoi] = useState<ExpressionOfInterest | null>(null);
   const [editRequirement, setEditRequirement] = useState<Requirement | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [viewEoi, setViewEoi] = useState<ExpressionOfInterest | null>(null);
 
   const load = () => {
     setLoading(true);
@@ -78,12 +81,10 @@ export default function StartupMyProposals() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <Link to={`/startup/explore`} state={{ scrollToRequirement: eoi.requirement_id }}>
-                    <Button variant="outline" size="sm" className="gap-1">
-                      <Eye className="h-4 w-4" />
-                      View
-                    </Button>
-                  </Link>
+                  <Button variant="outline" size="sm" className="gap-1" onClick={() => setViewEoi(eoi)}>
+                    <Eye className="h-4 w-4" />
+                    View
+                  </Button>
                   <Button variant="ghost" size="sm" className="gap-1" onClick={() => handleEdit(eoi)}>
                     <Pencil className="h-4 w-4" />
                     Modify
@@ -107,6 +108,79 @@ export default function StartupMyProposals() {
           }}
           initialValues={initialValues}
         />
+
+        {/* View proposal modal (read-only) */}
+        {viewEoi && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+            onClick={() => setViewEoi(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="View proposal"
+          >
+            <div
+              className="bg-page border border-border rounded-xl shadow-xl max-w-lg w-full max-h-[85vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-4 border-b border-border flex items-center justify-between sticky top-0 bg-page">
+                <h2 className="text-lg font-semibold">Proposal details</h2>
+                <Button variant="ghost" size="sm" onClick={() => setViewEoi(null)} aria-label="Close">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="p-4 space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-xs font-mono text-muted-foreground">{viewEoi.anonymous_id || viewEoi.requirement_id?.slice(0, 8)}</span>
+                  <span className="chip chip-default">{viewEoi.category || '—'}</span>
+                  <span className="chip text-xs bg-muted text-muted-foreground">{viewEoi.status}</span>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Requirement</div>
+                  <div className="font-semibold">{viewEoi.requirement_title || '—'}</div>
+                </div>
+                {viewEoi.message && (
+                  <div>
+                    <div className="text-xs text-muted-foreground">Your message</div>
+                    <p className="text-sm whitespace-pre-wrap mt-1">{viewEoi.message}</p>
+                  </div>
+                )}
+                {(viewEoi.proposed_budget != null || viewEoi.proposed_timeline_start || viewEoi.proposed_timeline_end) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {viewEoi.proposed_budget != null && (
+                      <div>
+                        <div className="text-xs text-muted-foreground">Proposed budget (USD)</div>
+                        <div className="font-medium">$ {viewEoi.proposed_budget}</div>
+                      </div>
+                    )}
+                    {(viewEoi.proposed_timeline_start || viewEoi.proposed_timeline_end) && (
+                      <div>
+                        <div className="text-xs text-muted-foreground">Proposed timeline</div>
+                        <div className="text-sm">{[viewEoi.proposed_timeline_start, viewEoi.proposed_timeline_end].filter(Boolean).join(' – ') || '—'}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {viewEoi.portfolio_link && (
+                  <div>
+                    <div className="text-xs text-muted-foreground">Portfolio link</div>
+                    <a href={viewEoi.portfolio_link} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline break-all">{viewEoi.portfolio_link}</a>
+                  </div>
+                )}
+                {viewEoi.attachment_path && (
+                  <div>
+                    <div className="text-xs text-muted-foreground">Attachment</div>
+                    <a href={`${API_BASE}/uploads/${viewEoi.attachment_path}`} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
+                      {viewEoi.attachment_original_name || 'Download attachment'}
+                    </a>
+                  </div>
+                )}
+                <div className="text-xs text-muted-foreground pt-2 border-t border-border">
+                  Submitted {viewEoi.created_at ? new Date(viewEoi.created_at).toLocaleString() : '—'}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

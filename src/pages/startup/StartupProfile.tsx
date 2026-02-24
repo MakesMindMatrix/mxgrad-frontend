@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/lib/auth-context';
 import { startupApi } from '@/lib/api';
 import type { StartupProfile } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ const TABS = [
 ];
 
 export default function StartupProfile() {
+  const { user } = useAuth();
   const [tab, setTab] = useState('basic');
   const [profile, setProfile] = useState<Partial<StartupProfile>>({});
   const [loading, setLoading] = useState(true);
@@ -99,24 +101,40 @@ export default function StartupProfile() {
 
             <div className="border-t border-border pt-4 mt-2">
               <h4 className="font-semibold text-foreground mb-3 text-sm">Registration details (managed by platform)</h4>
-              <p className="text-xs text-muted-foreground mb-3">Values provided during account creation.</p>
+              <p className="text-xs text-muted-foreground mb-3">All information provided during signup is shown below.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label>Company GSTN</Label>
-                  <Input value={profile.gst_number || ''} readOnly className="bg-muted/50" placeholder="e.g. 27AABCU9603R1ZM" />
+                  <Label className="text-muted-foreground text-xs">Email (login)</Label>
+                  <Input value={user?.email ?? ''} readOnly className="bg-muted/50 mt-1" />
                 </div>
                 <div>
-                  <Label>Additional email (optional)</Label>
-                  <Input type="email" value={profile.additional_email || ''} readOnly className="bg-muted/50" placeholder="another@company.com" />
+                  <Label className="text-muted-foreground text-xs">Full name</Label>
+                  <Input value={user?.name ?? ''} readOnly className="bg-muted/50 mt-1" />
                 </div>
                 <div>
-                  <Label>Mobile 1</Label>
-                  <Input value={profile.mobile_primary || ''} readOnly className="bg-muted/50" placeholder="+91 98765 43210" />
+                  <Label className="text-muted-foreground text-xs">Company website</Label>
+                  <Input type="url" value={profile.website || ''} readOnly className="bg-muted/50 mt-1" placeholder="https://www.example.com" />
                 </div>
                 <div>
-                  <Label>Mobile 2 (optional)</Label>
-                  <Input value={profile.mobile_secondary || ''} readOnly className="bg-muted/50" placeholder="Optional" />
+                  <Label className="text-muted-foreground text-xs">Company GSTN</Label>
+                  <Input value={profile.gst_number || ''} readOnly className="bg-muted/50 mt-1" placeholder="e.g. 27AABCU9603R1ZM" />
                 </div>
+                <div>
+                  <Label className="text-muted-foreground text-xs">Additional email (optional)</Label>
+                  <Input type="email" value={profile.additional_email || ''} readOnly className="bg-muted/50 mt-1" placeholder="another@company.com" />
+                </div>
+                <div>
+                  <Label className="text-muted-foreground text-xs">Mobile 1</Label>
+                  <Input value={profile.mobile_primary || ''} readOnly className="bg-muted/50 mt-1" placeholder="+91 98765 43210" />
+                </div>
+                <div>
+                  <Label className="text-muted-foreground text-xs">Mobile 2 (optional)</Label>
+                  <Input value={profile.mobile_secondary || ''} readOnly className="bg-muted/50 mt-1" placeholder="Optional" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <Label className="text-muted-foreground text-xs">Short description (from signup)</Label>
+                <Textarea value={profile.solution_description || ''} readOnly rows={3} className="bg-muted/50 mt-1 resize-none" placeholder="Brief description from account creation" />
               </div>
             </div>
           </TabsContent>
