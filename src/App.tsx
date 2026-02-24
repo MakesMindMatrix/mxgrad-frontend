@@ -3,6 +3,7 @@ import Navbar from '@/components/Navbar';
 import AppLayout from '@/components/AppLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Home from '@/pages/Home';
+import ContactUs from '@/pages/ContactUs';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import RegisterForm from '@/pages/RegisterForm';
@@ -51,6 +52,7 @@ export default function App() {
       <div className="flex-1 min-h-0 overflow-y-auto">
         <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/contact" element={<ContactUs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/register/form" element={<RegisterForm />} />

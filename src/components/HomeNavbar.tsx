@@ -3,9 +3,10 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const NAV_LINKS = [
-  { label: 'For Enterprises', href: '#for-enterprises' },
-  { label: 'For Startups', href: '#for-startups' },
-  { label: 'How It Works', href: '#how-it-works' },
+  { label: 'For Enterprises', href: '/#for-enterprises' },
+  { label: 'For Startups', href: '/#for-startups' },
+  { label: 'How It Works', href: '/#how-it-works' },
+  { label: 'Contact Us', href: '/contact' },
 ];
 
 export default function HomeNavbar() {
@@ -36,13 +37,23 @@ export default function HomeNavbar() {
         </Link>
         <nav className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map(({ label, href }) => (
-            <a
-              key={label}
-              href={href}
-              className={scrolled ? 'text-home-text-dark/80 hover:text-home-text-dark text-sm font-medium' : 'text-white/90 hover:text-white text-sm font-medium'}
-            >
-              {label}
-            </a>
+            href.startsWith('/') ? (
+              <Link
+                key={label}
+                to={href}
+                className={scrolled ? 'text-home-text-dark/80 hover:text-home-text-dark text-sm font-medium' : 'text-white/90 hover:text-white text-sm font-medium'}
+              >
+                {label}
+              </Link>
+            ) : (
+              <a
+                key={label}
+                href={href}
+                className={scrolled ? 'text-home-text-dark/80 hover:text-home-text-dark text-sm font-medium' : 'text-white/90 hover:text-white text-sm font-medium'}
+              >
+                {label}
+              </a>
+            )
           ))}
           <Link
             to="/login"

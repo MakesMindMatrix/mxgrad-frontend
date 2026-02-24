@@ -8,7 +8,7 @@ const FOOTER_LINKS = {
   ],
   Company: [
     { label: 'About', href: '#' },
-    { label: 'Contact', href: '#' },
+    { label: 'Contact Us', href: '/contact' },
   ],
   Legal: [
     { label: 'Privacy', href: '#' },
@@ -43,9 +43,15 @@ export default function FooterSection() {
             <ul className="space-y-2">
               {FOOTER_LINKS.Company.map(({ label, href }) => (
                 <li key={label}>
-                  <a href={href} className="text-white/60 hover:text-white text-sm transition">
-                    {label}
-                  </a>
+                  {href.startsWith('/') ? (
+                    <Link to={href} className="text-white/60 hover:text-white text-sm transition">
+                      {label}
+                    </Link>
+                  ) : (
+                    <a href={href} className="text-white/60 hover:text-white text-sm transition">
+                      {label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>

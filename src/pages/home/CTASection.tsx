@@ -23,12 +23,12 @@ export default function CTASection() {
           >
             Get Started
           </Link>
-          <a
-            href="#how-it-works"
+          <Link
+            to="/contact"
             className="inline-flex px-8 py-3.5 rounded-lg font-semibold text-home-text-dark border border-home-text-dark/30 hover:bg-home-text-dark/5 transition hover:scale-[1.03]"
           >
             Schedule Demo
-          </a>
+          </Link>
         </div>
       </motion.div>
     </section>

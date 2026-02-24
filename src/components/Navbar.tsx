@@ -65,11 +65,12 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const isContactUs = location.pathname === '/contact';
   const isRegister = location.pathname === '/register' || location.pathname.startsWith('/register/');
   const isLogin = location.pathname === '/login';
 
-  // On home we use the entrance header; don't render this navbar
-  if (isHome) return null;
+  // On home and contact us we use the home-style header (HomeNavbar); don't render this navbar
+  if (isHome || isContactUs) return null;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-nav text-nav border-b border-white/10 shadow-sm">
