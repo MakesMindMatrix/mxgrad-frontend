@@ -1,9 +1,28 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { gccApi } from '@/lib/api';
-import type { Requirement } from '@/lib/api';
+import type { Requirement, RequirementApprovalStatus } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Plus, FileText } from 'lucide-react';
+
+function ApprovalBadge({ status }: { status?: RequirementApprovalStatus | string }) {
+  if (!status || status === 'APPROVED') return null;
+  const label =
+    status === 'PENDING_APPROVAL'
+      ? 'Pending approval'
+      : status === 'SENT_BACK'
+        ? 'Sent back'
+        : status === 'REJECTED'
+          ? 'Rejected'
+          : status;
+  const className =
+    status === 'PENDING_APPROVAL'
+      ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
+      : status === 'SENT_BACK'
+        ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300'
+        : 'bg-destructive/20 text-destructive';
+  return <span className={`chip text-xs ${className}`}>{label}</span>;
+}
 
 export default function GccRequirements() {
   const [list, setList] = useState<Requirement[]>([]);
@@ -39,12 +58,16 @@ export default function GccRequirements() {
               <Link key={r.id} to={`/gcc/requirements/${r.id}`} className="block">
                 <div className="page-card p-6 flex items-center justify-between hover:border-blue-400 transition-colors">
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className="text-xs text-muted-foreground font-mono">{r.anonymous_id || r.id.slice(0, 8)}</span>
                       <span className="chip chip-default">{r.category}</span>
+                      <ApprovalBadge status={r.approval_status} />
                     </div>
                     <h3 className="font-semibold">{r.title}</h3>
                     <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{r.description}</p>
+                    {(r.approval_status === 'SENT_BACK' || r.approval_status === 'REJECTED') && r.admin_remarks && (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">Admin: {r.admin_remarks}</p>
+                    )}
                     <p className="text-xs text-muted-foreground mt-2">
                       {Number(r.interest_count) || 0} interest(s) · {r.status}
                     </p>

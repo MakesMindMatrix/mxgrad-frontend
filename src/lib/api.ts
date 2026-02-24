@@ -59,6 +59,22 @@ export const authApi = {
 };
 
 // Admin
+export interface RequirementApprovalItem {
+  id: string;
+  gcc_user_id: string;
+  title: string;
+  description: string;
+  category: string;
+  priority: string;
+  status: string;
+  approval_status: string;
+  admin_remarks?: string | null;
+  admin_remarks_at?: string | null;
+  created_at: string;
+  gcc_name: string;
+  gcc_email: string;
+}
+
 export const adminApi = {
   getPendingApprovals: () => api<User[]>('/admin/approvals'),
   approve: (userId: string) => api<User>(`/admin/approvals/${userId}/approve`, { method: 'POST' }),
@@ -72,9 +88,33 @@ export const adminApi = {
     api<void>(`/admin/users/${userId}`, { method: 'DELETE' }),
   requestReverification: (userId: string) =>
     api<{ message: string }>(`/admin/users/${userId}/request-reverification`, { method: 'POST' }),
-  getStats: () => api<{ totalUsers: number; pendingApprovals: number; openRequirements: number; pendingInterests: number }>('/admin/stats'),
+  getStats: () =>
+    api<{
+      totalUsers: number;
+      pendingApprovals: number;
+      pendingRequirementApprovals?: number;
+      openRequirements: number;
+      pendingInterests: number;
+    }>('/admin/stats'),
   getActivities: () => api<{ requirements: unknown[]; expressionsOfInterest: unknown[] }>('/admin/activities'),
   getActiveProjects: () => api<unknown[]>('/admin/active-projects'),
+  getPendingRequirementApprovals: () =>
+    api<RequirementApprovalItem[]>('/admin/requirement-approvals'),
+  approveRequirement: (requirementId: string) =>
+    api<{ id: string; title: string; approval_status: string }>(
+      `/admin/requirement-approvals/${requirementId}/approve`,
+      { method: 'POST' }
+    ),
+  sendBackRequirement: (requirementId: string, remarks: string) =>
+    api<{ id: string; title: string; approval_status: string; admin_remarks: string | null; admin_remarks_at: string | null }>(
+      `/admin/requirement-approvals/${requirementId}/send-back`,
+      { method: 'POST', body: JSON.stringify({ remarks }) }
+    ),
+  rejectRequirement: (requirementId: string, remarks: string) =>
+    api<{ id: string; title: string; approval_status: string; admin_remarks: string | null; admin_remarks_at: string | null }>(
+      `/admin/requirement-approvals/${requirementId}/reject`,
+      { method: 'POST', body: JSON.stringify({ remarks }) }
+    ),
 };
 
 // GCC
@@ -124,8 +164,27 @@ export const requirementsApi = {
     return api<Requirement[]>(`/requirements${q ? `?${q}` : ''}`);
   },
   get: (id: string) => api<Requirement>(`/requirements/${id}`),
-  expressInterest: (id: string, body: { message?: string; proposed_budget?: number; proposed_timeline_start?: string; proposed_timeline_end?: string; portfolio_link?: string }) =>
-    api<unknown>(`/requirements/${id}/express-interest`, { method: 'POST', body: JSON.stringify(body) }),
+  expressInterest: (
+    id: string,
+    body: { message?: string; proposed_budget?: number; proposed_timeline_start?: string; proposed_timeline_end?: string; portfolio_link?: string },
+    document?: File
+  ) => {
+    const form = new FormData();
+    if (body.message != null) form.append('message', body.message);
+    if (body.proposed_budget != null) form.append('proposed_budget', String(body.proposed_budget));
+    if (body.proposed_timeline_start) form.append('proposed_timeline_start', body.proposed_timeline_start);
+    if (body.proposed_timeline_end) form.append('proposed_timeline_end', body.proposed_timeline_end);
+    if (body.portfolio_link) form.append('portfolio_link', body.portfolio_link);
+    if (document) form.append('document', document);
+    const token = getToken();
+    const headers: Record<string, string> = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    return fetch(`${API_BASE}/requirements/${id}/express-interest`, { method: 'POST', body: form, headers }).then(async (res) => {
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new ApiError(res.status, (data as { message?: string }).message || 'Request failed');
+      return data as unknown;
+    });
+  },
   myInterests: () => api<ExpressionOfInterest[]>('/requirements/my/interests'),
 };
 
@@ -199,6 +258,8 @@ export interface StartupProfile {
   profile_completion_percentage?: number;
 }
 
+export type RequirementApprovalStatus = 'PENDING_APPROVAL' | 'APPROVED' | 'SENT_BACK' | 'REJECTED';
+
 export interface Requirement {
   id: string;
   title: string;
@@ -206,6 +267,9 @@ export interface Requirement {
   category: string;
   priority: string;
   status: string;
+  approval_status?: RequirementApprovalStatus;
+  admin_remarks?: string | null;
+  admin_remarks_at?: string | null;
   budget_min?: number;
   budget_max?: number;
   budget_currency?: string;
@@ -229,4 +293,6 @@ export interface ExpressionOfInterest {
   message?: string;
   status: string;
   created_at?: string;
+  attachment_path?: string | null;
+  attachment_original_name?: string | null;
 }

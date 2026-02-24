@@ -14,6 +14,7 @@ import GccDashboard from '@/pages/gcc/GccDashboard';
 import GccRequirements from '@/pages/gcc/GccRequirements';
 import GccRequirementNew from '@/pages/gcc/GccRequirementNew';
 import GccRequirementDetail from '@/pages/gcc/GccRequirementDetail';
+import GccRequirementEdit from '@/pages/gcc/GccRequirementEdit';
 import GccInterests from '@/pages/gcc/GccInterests';
 import GccDeals from '@/pages/gcc/GccDeals';
 import GccNotifications from '@/pages/gcc/GccNotifications';
@@ -28,6 +29,7 @@ import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminUsers from '@/pages/admin/AdminUsers';
 import AdminActivities from '@/pages/admin/AdminActivities';
 import AdminActiveProjects from '@/pages/admin/AdminActiveProjects';
+import AdminRequirementApprovals from '@/pages/admin/AdminRequirementApprovals';
 
 function DashboardRoute({ children, allowedRoles, requireAdmin }: { children: React.ReactNode; allowedRoles?: ('ADMIN' | 'GCC' | 'STARTUP')[]; requireAdmin?: boolean }) {
   return (
@@ -55,6 +57,7 @@ export default function App() {
         <Route path="/gcc/requirements" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirements /></DashboardRoute>} />
         <Route path="/gcc/requirements/new" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirementNew /></DashboardRoute>} />
         <Route path="/gcc/requirements/:id" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirementDetail /></DashboardRoute>} />
+        <Route path="/gcc/requirements/:id/edit" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirementEdit /></DashboardRoute>} />
         <Route path="/gcc/interests" element={<DashboardRoute allowedRoles={['GCC']}><GccInterests /></DashboardRoute>} />
         <Route path="/gcc/deals" element={<DashboardRoute allowedRoles={['GCC']}><GccDeals /></DashboardRoute>} />
         <Route path="/gcc/notifications" element={<DashboardRoute allowedRoles={['GCC']}><GccNotifications /></DashboardRoute>} />
@@ -71,6 +74,7 @@ export default function App() {
         <Route path="/admin/dashboard" element={<DashboardRoute requireAdmin><AdminDashboard /></DashboardRoute>} />
         <Route path="/admin/explore" element={<DashboardRoute requireAdmin><Explore /></DashboardRoute>} />
         <Route path="/admin/approvals" element={<DashboardRoute requireAdmin><AdminApprovals /></DashboardRoute>} />
+        <Route path="/admin/requirement-approvals" element={<DashboardRoute requireAdmin><AdminRequirementApprovals /></DashboardRoute>} />
         <Route path="/admin/users" element={<DashboardRoute requireAdmin><AdminUsers /></DashboardRoute>} />
         <Route path="/admin/activities" element={<DashboardRoute requireAdmin><AdminActivities /></DashboardRoute>} />
         <Route path="/admin/projects" element={<DashboardRoute requireAdmin><AdminActiveProjects /></DashboardRoute>} />

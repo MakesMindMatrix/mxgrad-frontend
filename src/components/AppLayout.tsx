@@ -50,6 +50,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   } else if (user?.role === 'ADMIN') {
     navItems.push({ to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard });
     navItems.push({ to: '/admin/approvals', label: 'Approvals', icon: Shield });
+    navItems.push({ to: '/admin/requirement-approvals', label: 'Requirement approvals', icon: FileText });
     navItems.push({ to: '/admin/users', label: 'All Users', icon: Users });
     navItems.push({ to: '/admin/activities', label: 'Activities', icon: Activity });
     navItems.push({ to: '/admin/projects', label: 'Active Projects', icon: FolderKanban });

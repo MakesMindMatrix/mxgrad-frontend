@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import type { Requirement } from '@/lib/api';
 import { requirementsApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Paperclip, X } from 'lucide-react';
+
+const ACCEPT_DOCS = '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.png,.jpg,.jpeg';
+const MAX_MB = 10;
 
 interface Props {
   requirement: Requirement | null;
@@ -17,8 +21,21 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange 
   const [portfolioLink, setPortfolioLink] = useState('');
   const [timelineStart, setTimelineStart] = useState('');
   const [timelineEnd, setTimelineEnd] = useState('');
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > MAX_MB * 1024 * 1024) {
+      setError(`File must be under ${MAX_MB}MB`);
+      return;
+    }
+    setError('');
+    setAttachment(file);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,16 +43,22 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange 
     setError('');
     setLoading(true);
     try {
-      await requirementsApi.expressInterest(requirement.id, {
-        message,
-        portfolio_link: portfolioLink || undefined,
-        proposed_timeline_start: timelineStart || undefined,
-        proposed_timeline_end: timelineEnd || undefined,
-      });
+      await requirementsApi.expressInterest(
+        requirement.id,
+        {
+          message,
+          portfolio_link: portfolioLink || undefined,
+          proposed_timeline_start: timelineStart || undefined,
+          proposed_timeline_end: timelineEnd || undefined,
+        },
+        attachment ?? undefined
+      );
       setMessage('');
       setPortfolioLink('');
       setTimelineStart('');
       setTimelineEnd('');
+      setAttachment(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
       onOpenChange(false);
     } catch (err: unknown) {
       setError(err && typeof err === 'object' && 'message' in err ? String((err as { message: string }).message) : 'Failed to submit');
@@ -83,6 +106,41 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange 
           <div>
             <Label htmlFor="portfolio">Portfolio link</Label>
             <Input id="portfolio" type="url" value={portfolioLink} onChange={(e) => setPortfolioLink(e.target.value)} placeholder="https://..." />
+          </div>
+          <div>
+            <Label>Document attachment (optional)</Label>
+            <p className="text-xs text-muted-foreground mb-2">PDF, Word, Excel, PPT, images or TXT. Max {MAX_MB}MB.</p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={ACCEPT_DOCS}
+              onChange={handleFileChange}
+              className="hidden"
+              id="proposal-doc"
+            />
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Paperclip className="h-4 w-4" />
+                {attachment ? attachment.name : 'Choose file'}
+              </Button>
+              {attachment && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground"
+                  onClick={() => { setAttachment(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
           <div className="flex gap-3">
             <Button type="submit" disabled={loading}>{loading ? 'Submitting...' : 'Submit'}</Button>
