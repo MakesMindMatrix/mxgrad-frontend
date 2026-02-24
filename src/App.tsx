@@ -5,6 +5,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Home from '@/pages/Home';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
+import RegisterForm from '@/pages/RegisterForm';
 import PendingApproval from '@/pages/PendingApproval';
 import Explore from '@/pages/Explore';
 import GccExplore from '@/pages/gcc/GccExplore';
@@ -45,6 +46,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/register/form" element={<RegisterForm />} />
         <Route path="/pending-approval" element={<PendingApproval />} />
         <Route path="/explore" element={<Explore />} />
 

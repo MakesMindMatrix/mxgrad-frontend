@@ -65,7 +65,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === '/';
-  const isRegister = location.pathname === '/register';
+  const isRegister = location.pathname === '/register' || location.pathname.startsWith('/register/');
   const isLogin = location.pathname === '/login';
 
   // On home we use the entrance header; don't render this navbar
