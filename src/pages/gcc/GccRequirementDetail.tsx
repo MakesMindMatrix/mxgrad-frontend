@@ -75,14 +75,18 @@ export default function GccRequirementDetail() {
             </div>
           )}
           <div className="flex flex-wrap gap-2 mb-4">
-            <Button variant="secondary" size="sm" className="gap-1" asChild>
-              <Link to={`/gcc/requirements/${req.id}`}>
-                <Eye className="h-4 w-4" />
-                View
-              </Link>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="gap-1.5 min-w-[7rem]"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            >
+              <Eye className="h-4 w-4" />
+              View
             </Button>
             <Link to={`/gcc/requirements/${req.id}/edit`}>
-              <Button variant="outline" size="sm" className="gap-1">
+              <Button variant="outline" size="sm" className="gap-1.5 min-w-[7rem]">
                 <Pencil className="h-4 w-4" />
                 {req.approval_status === 'SENT_BACK' ? 'Edit and resubmit for approval' : 'Edit'}
               </Button>

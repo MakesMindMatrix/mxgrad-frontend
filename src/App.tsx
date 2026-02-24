@@ -16,6 +16,7 @@ import GccRequirementNew from '@/pages/gcc/GccRequirementNew';
 import GccRequirementDetail from '@/pages/gcc/GccRequirementDetail';
 import GccRequirementEdit from '@/pages/gcc/GccRequirementEdit';
 import GccInterests from '@/pages/gcc/GccInterests';
+import GccInterestDetail from '@/pages/gcc/GccInterestDetail';
 import GccDeals from '@/pages/gcc/GccDeals';
 import GccNotifications from '@/pages/gcc/GccNotifications';
 import GccProfile from '@/pages/gcc/GccProfile';
@@ -59,6 +60,7 @@ export default function App() {
         <Route path="/gcc/requirements/:id" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirementDetail /></DashboardRoute>} />
         <Route path="/gcc/requirements/:id/edit" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirementEdit /></DashboardRoute>} />
         <Route path="/gcc/interests" element={<DashboardRoute allowedRoles={['GCC']}><GccInterests /></DashboardRoute>} />
+        <Route path="/gcc/interests/:id" element={<DashboardRoute allowedRoles={['GCC']}><GccInterestDetail /></DashboardRoute>} />
         <Route path="/gcc/deals" element={<DashboardRoute allowedRoles={['GCC']}><GccDeals /></DashboardRoute>} />
         <Route path="/gcc/notifications" element={<DashboardRoute allowedRoles={['GCC']}><GccNotifications /></DashboardRoute>} />
         <Route path="/gcc/profile" element={<DashboardRoute allowedRoles={['GCC']}><GccProfile /></DashboardRoute>} />

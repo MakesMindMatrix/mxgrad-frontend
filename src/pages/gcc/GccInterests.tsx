@@ -44,8 +44,8 @@ export default function GccInterests() {
                     {i.interest_status} · {new Date(i.created_at).toLocaleString()}
                   </p>
                 </div>
-                <Link to={`/gcc/requirements/${i.requirement_id}`}>
-                  <Button variant="outline" size="sm">View requirement</Button>
+                <Link to={`/gcc/interests/${i.id}`}>
+                  <Button variant="outline" size="sm">View proposal</Button>
                 </Link>
               </li>
             ))}
