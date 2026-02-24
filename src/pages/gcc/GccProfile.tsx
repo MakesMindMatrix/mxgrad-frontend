@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/lib/auth-context';
 import { gccApi } from '@/lib/api';
 import type { GccProfile } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -55,6 +56,10 @@ type EditableFields = {
   contact_designation: string;
   contact_email: string;
   phone: string;
+  alternate_contact_person: string;
+  alternate_contact_designation: string;
+  alternate_contact_email: string;
+  alternate_contact_phone: string;
 };
 
 const emptyEditable: EditableFields = {
@@ -68,9 +73,14 @@ const emptyEditable: EditableFields = {
   contact_designation: '',
   contact_email: '',
   phone: '',
+  alternate_contact_person: '',
+  alternate_contact_designation: '',
+  alternate_contact_email: '',
+  alternate_contact_phone: '',
 };
 
 export default function GccProfile() {
+  const { user } = useAuth();
   const [profile, setProfile] = useState<Partial<GccProfile>>(emptyProfile);
   const [standardDraft, setStandardDraft] = useState<StandardDraft>(emptyStandardDraft);
   const [editable, setEditable] = useState<EditableFields>(emptyEditable);
@@ -105,6 +115,10 @@ export default function GccProfile() {
           contact_designation: full.contact_designation || '',
           contact_email: full.contact_email || '',
           phone: full.phone || '',
+          alternate_contact_person: full.alternate_contact_person || '',
+          alternate_contact_designation: full.alternate_contact_designation || '',
+          alternate_contact_email: full.alternate_contact_email || '',
+          alternate_contact_phone: full.alternate_contact_phone || '',
         });
       })
       .catch(() => {
@@ -114,8 +128,7 @@ export default function GccProfile() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const saveProfile = async () => {
     setSaving(true);
     setMessage('');
     setError('');
@@ -123,6 +136,11 @@ export default function GccProfile() {
     if (editable.contact_email && !editable.contact_email.includes('@')) {
       setSaving(false);
       setError('Please enter a valid work email.');
+      return;
+    }
+    if (editable.alternate_contact_email && !editable.alternate_contact_email.includes('@')) {
+      setSaving(false);
+      setError('Please enter a valid work email for alternate contact.');
       return;
     }
 
@@ -144,6 +162,10 @@ export default function GccProfile() {
         contact_designation: editable.contact_designation || undefined,
         contact_email: editable.contact_email || undefined,
         phone: editable.phone || undefined,
+        alternate_contact_person: editable.alternate_contact_person || undefined,
+        alternate_contact_designation: editable.alternate_contact_designation || undefined,
+        alternate_contact_email: editable.alternate_contact_email || undefined,
+        alternate_contact_phone: editable.alternate_contact_phone || undefined,
       };
       if (payload.year_established !== undefined && Number.isNaN(payload.year_established)) delete payload.year_established;
 
@@ -169,6 +191,10 @@ export default function GccProfile() {
         contact_designation: full.contact_designation || '',
         contact_email: full.contact_email || '',
         phone: full.phone || '',
+        alternate_contact_person: full.alternate_contact_person || '',
+        alternate_contact_designation: full.alternate_contact_designation || '',
+        alternate_contact_email: full.alternate_contact_email || '',
+        alternate_contact_phone: full.alternate_contact_phone || '',
       });
       setMessage('Profile updated.');
       setEditMode(false);
@@ -177,6 +203,11 @@ export default function GccProfile() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    saveProfile();
   };
 
   const handleCancel = () => {
@@ -200,6 +231,10 @@ export default function GccProfile() {
       contact_designation: full.contact_designation || '',
       contact_email: full.contact_email || '',
       phone: full.phone || '',
+      alternate_contact_person: full.alternate_contact_person || '',
+      alternate_contact_designation: full.alternate_contact_designation || '',
+      alternate_contact_email: full.alternate_contact_email || '',
+      alternate_contact_phone: full.alternate_contact_phone || '',
     });
     setEditMode(false);
     setError('');
@@ -213,6 +248,72 @@ export default function GccProfile() {
         <div>
           <h1 className="text-3xl font-bold mb-2">GCC Profile</h1>
           <p className="text-muted-foreground">Manage your organization&apos;s profile information.</p>
+        </div>
+
+        {/* Primary Contact Person – moved above Standard information */}
+        <div className="page-card p-6 space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-lg font-semibold">Primary Contact Person</h2>
+            {!editMode ? (
+              <Button type="button" variant="outline" size="sm" onClick={() => setEditMode(true)}>
+                Edit profile
+              </Button>
+            ) : null}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="profile_contact_person">Name</Label>
+              <Input
+                id="profile_contact_person"
+                value={editable.contact_person}
+                onChange={(e) => setEditable((p) => ({ ...p, contact_person: e.target.value }))}
+                readOnly={!editMode}
+                className={!editMode ? 'bg-muted/40 border-border/60' : ''}
+              />
+            </div>
+            <div>
+              <Label htmlFor="profile_contact_designation">Designation</Label>
+              <Input
+                id="profile_contact_designation"
+                value={editable.contact_designation}
+                onChange={(e) => setEditable((p) => ({ ...p, contact_designation: e.target.value }))}
+                readOnly={!editMode}
+                className={!editMode ? 'bg-muted/40 border-border/60' : ''}
+              />
+            </div>
+            <div>
+              <Label htmlFor="profile_contact_email">Work Email</Label>
+              <Input
+                id="profile_contact_email"
+                type="email"
+                value={editable.contact_email}
+                onChange={(e) => setEditable((p) => ({ ...p, contact_email: e.target.value }))}
+                readOnly={!editMode}
+                className={!editMode ? 'bg-muted/40 border-border/60' : ''}
+              />
+            </div>
+            <div>
+              <Label htmlFor="profile_phone">Phone (optional)</Label>
+              <Input
+                id="profile_phone"
+                type="tel"
+                value={editable.phone}
+                onChange={(e) => setEditable((p) => ({ ...p, phone: e.target.value }))}
+                readOnly={!editMode}
+                className={!editMode ? 'bg-muted/40 border-border/60' : ''}
+              />
+            </div>
+          </div>
+          {editMode && (
+            <div className="flex gap-3 pt-2">
+              <Button type="button" onClick={saveProfile} disabled={saving}>
+                {saving ? 'Saving...' : 'Save changes'}
+              </Button>
+              <Button type="button" variant="outline" disabled={saving} onClick={handleCancel}>
+                Cancel
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Standard information – only empty details can be edited */}
@@ -313,11 +414,20 @@ export default function GccProfile() {
             </div>
           </div>
 
-          {/* Registration details – only GSTN and Mobile from signup */}
+          <div className="flex justify-end pt-2">
+            <Button type="button" onClick={saveProfile} disabled={saving}>
+              {saving ? 'Saving...' : 'Update details'}
+            </Button>
+          </div>
+
+          {/* Registration details (managed by platform) – email, GSTN, Mobile from signup */}
           <div className="mt-4 pt-4 border-t border-border/60">
             <h3 className="text-sm font-semibold mb-3">Registration details (managed by platform)</h3>
-            <p className="text-xs text-muted-foreground mb-3">Email (login) and the following were provided during account creation.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs font-medium text-muted-foreground">Email (login)</Label>
+                <Input value={user?.email ?? ''} readOnly className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground" />
+              </div>
               <div>
                 <Label className="text-xs font-medium text-muted-foreground">Company GSTN</Label>
                 <Input value={profile.gst_number || ''} readOnly placeholder="e.g. 27AABCU9603R1ZM" className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground" />
@@ -436,46 +546,50 @@ export default function GccProfile() {
           </div>
 
           <div className="border-t border-border pt-4">
-            <h3 className="font-semibold text-foreground mb-3">Primary Contact Person</h3>
+            <h3 className="font-semibold text-foreground mb-3">Alternate contact person</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="contact_person">Name</Label>
+                <Label htmlFor="alternate_contact_person">Name</Label>
                 <Input
-                  id="contact_person"
-                  value={editable.contact_person}
-                  onChange={(e) => setEditable((p) => ({ ...p, contact_person: e.target.value }))}
+                  id="alternate_contact_person"
+                  value={editable.alternate_contact_person}
+                  onChange={(e) => setEditable((p) => ({ ...p, alternate_contact_person: e.target.value }))}
+                  placeholder="Alternate contact name"
                   readOnly={!editMode}
                   className={!editMode ? 'bg-muted/40 border-border/60' : ''}
                 />
               </div>
               <div>
-                <Label htmlFor="contact_designation">Designation</Label>
+                <Label htmlFor="alternate_contact_designation">Designation</Label>
                 <Input
-                  id="contact_designation"
-                  value={editable.contact_designation}
-                  onChange={(e) => setEditable((p) => ({ ...p, contact_designation: e.target.value }))}
+                  id="alternate_contact_designation"
+                  value={editable.alternate_contact_designation}
+                  onChange={(e) => setEditable((p) => ({ ...p, alternate_contact_designation: e.target.value }))}
+                  placeholder="Designation"
                   readOnly={!editMode}
                   className={!editMode ? 'bg-muted/40 border-border/60' : ''}
                 />
               </div>
               <div>
-                <Label htmlFor="contact_email">Work Email</Label>
+                <Label htmlFor="alternate_contact_email">Work Email</Label>
                 <Input
-                  id="contact_email"
+                  id="alternate_contact_email"
                   type="email"
-                  value={editable.contact_email}
-                  onChange={(e) => setEditable((p) => ({ ...p, contact_email: e.target.value }))}
+                  value={editable.alternate_contact_email}
+                  onChange={(e) => setEditable((p) => ({ ...p, alternate_contact_email: e.target.value }))}
+                  placeholder="email@company.com"
                   readOnly={!editMode}
                   className={!editMode ? 'bg-muted/40 border-border/60' : ''}
                 />
               </div>
               <div>
-                <Label htmlFor="phone">Phone (optional)</Label>
+                <Label htmlFor="alternate_contact_phone">Phone (optional)</Label>
                 <Input
-                  id="phone"
+                  id="alternate_contact_phone"
                   type="tel"
-                  value={editable.phone}
-                  onChange={(e) => setEditable((p) => ({ ...p, phone: e.target.value }))}
+                  value={editable.alternate_contact_phone}
+                  onChange={(e) => setEditable((p) => ({ ...p, alternate_contact_phone: e.target.value }))}
+                  placeholder="Optional"
                   readOnly={!editMode}
                   className={!editMode ? 'bg-muted/40 border-border/60' : ''}
                 />

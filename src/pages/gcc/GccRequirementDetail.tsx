@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select } from '@/components/ui/select';
-import { ArrowLeft, Pencil } from 'lucide-react';
+import { ArrowLeft, Eye } from 'lucide-react';
 
 const CATEGORIES = ['AI', 'DevOps', 'Cloud', 'Data', 'Security', 'Blockchain', 'IoT'];
 const PRIORITIES = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
@@ -198,8 +198,8 @@ export default function GccRequirementDetail() {
               className="gap-1.5 min-w-[7rem]"
               onClick={startEdit}
             >
-              <Pencil className="h-4 w-4" />
-              {req.approval_status === 'SENT_BACK' ? 'Edit and resubmit for approval' : 'Edit'}
+              <Eye className="h-4 w-4" />
+              {req.approval_status === 'SENT_BACK' ? 'Edit and resubmit for approval' : 'View'}
             </Button>
           </div>
           {!editMode || !form ? (

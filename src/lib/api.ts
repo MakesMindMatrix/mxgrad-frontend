@@ -226,6 +226,10 @@ export interface GccProfile {
   additional_email?: string;
   mobile_primary?: string;
   mobile_secondary?: string;
+  alternate_contact_person?: string;
+  alternate_contact_designation?: string;
+  alternate_contact_email?: string;
+  alternate_contact_phone?: string;
 }
 
 export interface StartupProfile {
