@@ -10,6 +10,11 @@ import { Paperclip, X } from 'lucide-react';
 const ACCEPT_DOCS = '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.png,.jpg,.jpeg';
 const MAX_MB = 10;
 
+function todayYYYYMMDD(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 export interface ExpressInterestInitialValues {
   message?: string;
   portfolio_link?: string;
@@ -67,6 +72,15 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange,
     e.preventDefault();
     if (!requirement) return;
     setError('');
+    const today = todayYYYYMMDD();
+    if (timelineStart && timelineStart < today) {
+      setError('Timeline start must be today or a future date.');
+      return;
+    }
+    if (timelineStart && timelineEnd && timelineEnd < timelineStart) {
+      setError('Timeline end must be on or after the start date.');
+      return;
+    }
     setLoading(true);
     try {
       await requirementsApi.expressInterest(
@@ -128,11 +142,25 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange,
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="timeline_start">Timeline start</Label>
-              <Input id="timeline_start" type="date" value={timelineStart} onChange={(e) => setTimelineStart(e.target.value)} />
+              <Input
+                id="timeline_start"
+                type="date"
+                min={todayYYYYMMDD()}
+                value={timelineStart}
+                onChange={(e) => setTimelineStart(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground mt-1">Today or a future date</p>
             </div>
             <div>
               <Label htmlFor="timeline_end">Timeline end</Label>
-              <Input id="timeline_end" type="date" value={timelineEnd} onChange={(e) => setTimelineEnd(e.target.value)} />
+              <Input
+                id="timeline_end"
+                type="date"
+                min={timelineStart || todayYYYYMMDD()}
+                value={timelineEnd}
+                onChange={(e) => setTimelineEnd(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground mt-1">On or after start date</p>
             </div>
           </div>
           <div>

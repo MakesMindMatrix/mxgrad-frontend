@@ -12,6 +12,11 @@ import { ArrowLeft } from 'lucide-react';
 const CATEGORIES = ['AI', 'DevOps', 'Cloud', 'Data', 'Security', 'Blockchain', 'IoT'];
 const PRIORITIES = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
 
+function todayYYYYMMDD(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 type FormState = {
   title: string;
   description: string;
@@ -118,6 +123,15 @@ export default function GccRequirementEdit() {
   const saveRequirement = async (): Promise<boolean> => {
     if (!id) return false;
     setError('');
+    const today = todayYYYYMMDD();
+    if (form.timeline_start && form.timeline_start < today) {
+      setError('Timeline start must be today or a future date.');
+      return false;
+    }
+    if (form.timeline_start && form.timeline_end && form.timeline_end < form.timeline_start) {
+      setError('Timeline end must be on or after the start date.');
+      return false;
+    }
     setLoading(true);
     try {
       const payload = {
@@ -248,11 +262,25 @@ export default function GccRequirementEdit() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="timeline_start">Timeline start</Label>
-              <Input id="timeline_start" type="date" value={form.timeline_start} onChange={(e) => setForm((f) => ({ ...f, timeline_start: e.target.value }))} />
+              <Input
+                id="timeline_start"
+                type="date"
+                min={todayYYYYMMDD()}
+                value={form.timeline_start}
+                onChange={(e) => setForm((f) => ({ ...f, timeline_start: e.target.value }))}
+              />
+              <p className="text-xs text-muted-foreground mt-1">Today or a future date</p>
             </div>
             <div>
               <Label htmlFor="timeline_end">Timeline end</Label>
-              <Input id="timeline_end" type="date" value={form.timeline_end} onChange={(e) => setForm((f) => ({ ...f, timeline_end: e.target.value }))} />
+              <Input
+                id="timeline_end"
+                type="date"
+                min={form.timeline_start || todayYYYYMMDD()}
+                value={form.timeline_end}
+                onChange={(e) => setForm((f) => ({ ...f, timeline_end: e.target.value }))}
+              />
+              <p className="text-xs text-muted-foreground mt-1">On or after start date</p>
             </div>
           </div>
           <div>

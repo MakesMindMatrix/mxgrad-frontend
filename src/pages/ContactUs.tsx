@@ -6,6 +6,7 @@ import { Phone, Mail, MapPin } from 'lucide-react';
 const CONTACT = {
   landline: '080-49748471',
   email: 'contact@mindmatrix.io',
+  mapUrl: 'https://maps.app.goo.gl/XJe7bBw7mWek6Tf58',
   address: [
     'CL Infotech Pvt. Ltd.',
     '4th Floor, Kiran Arcade, #651, 13th Cross, 27th Main,',
@@ -78,8 +79,13 @@ export default function ContactUs() {
               <span className="text-lg font-semibold text-home-text-dark break-all">{CONTACT.email}</span>
             </a>
 
-            <div className="sm:col-span-2 lg:col-span-1 flex flex-col p-6 rounded-2xl border border-home-text-dark/10 bg-home-neutral/50">
-              <div className="w-12 h-12 rounded-xl bg-home-accent/10 text-home-accent flex items-center justify-center mb-4">
+            <a
+              href={CONTACT.mapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group sm:col-span-2 lg:col-span-1 flex flex-col p-6 rounded-2xl border border-home-text-dark/10 bg-home-neutral/50 hover:border-home-accent/40 hover:shadow-lg hover:shadow-home-accent/5 transition-all duration-300"
+            >
+              <div className="w-12 h-12 rounded-xl bg-home-accent/10 text-home-accent flex items-center justify-center mb-4 group-hover:bg-home-accent group-hover:text-white transition-colors">
                 <MapPin className="w-6 h-6" />
               </div>
               <span className="text-xs font-semibold uppercase tracking-wider text-home-text-dark/60 mb-2">Address</span>
@@ -91,7 +97,10 @@ export default function ContactUs() {
                   </span>
                 ))}
               </address>
-            </div>
+              <span className="text-xs text-home-accent font-medium mt-2 inline-flex items-center gap-1">
+                View on Google Maps →
+              </span>
+            </a>
           </motion.div>
 
           <motion.div
