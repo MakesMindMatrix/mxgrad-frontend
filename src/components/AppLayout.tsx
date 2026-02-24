@@ -114,17 +114,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main content - fixed height; only inner content scrolls */}
       <main className={clsx('flex-1 flex flex-col min-h-0 overflow-hidden bg-page pt-14 relative', sidebarOpen ? 'ml-56' : 'ml-16')}>
-        {!sidebarOpen && (
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="fixed left-16 top-20 z-30 flex items-center justify-center rounded-r-md border border-white/10 bg-sidebar p-2 text-white/90 shadow-md hover:bg-white/10 hover:text-white transition"
-            aria-label="Open sidebar"
-            title="Open sidebar"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        )}
         <div className="flex-1 min-h-0 overflow-y-auto">
           {children}
         </div>

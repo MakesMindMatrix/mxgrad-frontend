@@ -76,6 +76,34 @@ export default function Register() {
       <div className="w-full max-w-lg relative z-0">
         <div className="page-card p-8 shadow-xl">
           <h1 className="text-xl font-bold text-foreground mb-2">Create account</h1>
+          <p className="text-muted-foreground text-sm mt-1 mb-4">Select your registration category.</p>
+
+          <div className="space-y-3 mb-4">
+            <button
+              type="button"
+              onClick={() => setRole('STARTUP')}
+              className={`w-full flex items-center justify-between rounded-lg border px-4 py-3 text-left transition-colors ${
+                role === 'STARTUP'
+                  ? 'border-primary bg-primary/5 text-foreground'
+                  : 'border-border bg-card hover:border-primary/50'
+              }`}
+            >
+              <span className="font-medium text-sm">Startup Entity</span>
+              <span className="text-muted-foreground text-xs">Emerging technology companies and scale-ups</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setRole('GCC')}
+              className={`w-full flex items-center justify-between rounded-lg border px-4 py-3 text-left transition-colors ${
+                role === 'GCC'
+                  ? 'border-primary bg-primary/5 text-foreground'
+                  : 'border-border bg-card hover:border-primary/50'
+              }`}
+            >
+              <span className="font-medium text-sm">GCC Entity</span>
+              <span className="text-muted-foreground text-xs">Global Capability Centers and corporate innovation units.</span>
+            </button>
+          </div>
           <p className="text-sm text-muted-foreground mb-6 text-center">
             {role === 'GCC' ? (
               <>Not a GCC Entity? <button type="button" onClick={() => setRole('STARTUP')} className="text-primary hover:underline font-medium">Go to Startup Entity</button></>

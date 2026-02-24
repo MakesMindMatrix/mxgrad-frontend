@@ -10,13 +10,13 @@ const STEPS = [
 
 export default function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="py-16 md:py-20 bg-white scroll-mt-20 overflow-hidden">
+    <section id="how-it-works" className="py-12 md:py-14 bg-white scroll-mt-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-10 md:mb-12"
+          className="text-center mb-8 md:mb-10"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-home-text-dark tracking-tight mb-4">
             How It Works
@@ -26,37 +26,76 @@ export default function HowItWorksSection() {
           </p>
         </motion.div>
 
-        {/* Desktop/tablet: compact grid so the section fits on-screen */}
-        <div className="hidden md:block">
-          <div className="mx-auto max-w-6xl">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-4">
-              {STEPS.map((step, i) => (
+        {/* Desktop: vertical dotted line with alternating left/right cards - shrunk */}
+        <div className="relative hidden md:block max-w-4xl mx-auto">
+          <div
+            className="absolute left-1/2 top-0 bottom-0 w-0 -translate-x-1/2 border-l-2 border-home-accent/40 pointer-events-none z-0"
+            style={{ borderStyle: 'dotted' }}
+            aria-hidden
+          />
+          <div className="relative flex flex-col gap-5">
+            {STEPS.map((step, i) => {
+              const isLeft = i % 2 === 0;
+              return (
                 <motion.div
                   key={step.title}
-                  initial={{ opacity: 0, y: 14 }}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-60px' }}
-                  transition={{ duration: 0.35, delay: i * 0.06 }}
-                  whileHover={{
-                    y: -4,
-                    scale: 1.01,
-                    boxShadow: '0 18px 36px -18px rgba(11, 31, 58, 0.22), 0 0 0 1px rgba(37, 99, 235, 0.10)',
-                  }}
-                  className="relative rounded-2xl border border-home-text-dark/10 bg-white px-5 py-5 lg:px-4 lg:py-4 shadow-md hover:border-home-accent/20 transition-all duration-300 cursor-default group"
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.4, delay: i * 0.08 }}
+                  className="relative grid grid-cols-[1fr_auto_1fr] gap-4 items-center"
                 >
-                  <div className="absolute -top-3 left-4 rounded-full border border-home-text-dark/10 bg-white px-2 py-0.5 text-xs font-semibold text-home-text-dark/70">
-                    Step {i + 1}
+                  <div className={isLeft ? 'flex justify-end' : ''}>
+                    {isLeft && (
+                      <motion.div
+                        whileHover={{
+                          y: -4,
+                          scale: 1.02,
+                          boxShadow: '0 20px 40px -12px rgba(11, 31, 58, 0.15), 0 0 0 1px rgba(37, 99, 235, 0.08)',
+                        }}
+                        transition={{ type: 'spring', stiffness: 350, damping: 22 }}
+                        className="relative w-full max-w-[260px] p-5 rounded-xl border border-home-text-dark/10 bg-white shadow-lg hover:border-home-accent/20 transition-all duration-300 cursor-default group"
+                      >
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-home-accent/[0.07] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                        <div className="relative flex flex-col items-center text-center">
+                          <div className="w-10 h-10 rounded-xl bg-home-accent/10 flex items-center justify-center mb-2.5 text-home-accent group-hover:bg-home-accent/20 transition-colors">
+                            <step.icon className="w-5 h-5" />
+                          </div>
+                          <h3 className="font-semibold text-home-text-dark text-sm mb-1">{step.title}</h3>
+                          <p className="text-home-text-dark/70 text-xs leading-relaxed">{step.desc}</p>
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
-                  <div className="flex flex-col items-start text-left">
-                    <div className="w-10 h-10 rounded-xl bg-home-accent/10 flex items-center justify-center mb-3 text-home-accent group-hover:bg-home-accent/20 transition-colors">
-                      <step.icon className="w-5 h-5" />
-                    </div>
-                    <h3 className="font-semibold text-home-text-dark mb-1.5">{step.title}</h3>
-                    <p className="text-home-text-dark/70 text-sm leading-relaxed">{step.desc}</p>
+                  <div
+                    className="w-3.5 h-3.5 rounded-full bg-home-accent border-[2.5px] border-white shadow-md z-10 flex-shrink-0"
+                    aria-hidden
+                  />
+                  <div className={!isLeft ? 'flex justify-start' : ''}>
+                    {!isLeft && (
+                      <motion.div
+                        whileHover={{
+                          y: -4,
+                          scale: 1.02,
+                          boxShadow: '0 20px 40px -12px rgba(11, 31, 58, 0.15), 0 0 0 1px rgba(37, 99, 235, 0.08)',
+                        }}
+                        transition={{ type: 'spring', stiffness: 350, damping: 22 }}
+                        className="relative w-full max-w-[260px] p-5 rounded-xl border border-home-text-dark/10 bg-white shadow-lg hover:border-home-accent/20 transition-all duration-300 cursor-default group"
+                      >
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-home-accent/[0.07] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                        <div className="relative flex flex-col items-center text-center">
+                          <div className="w-10 h-10 rounded-xl bg-home-accent/10 flex items-center justify-center mb-2.5 text-home-accent group-hover:bg-home-accent/20 transition-colors">
+                            <step.icon className="w-5 h-5" />
+                          </div>
+                          <h3 className="font-semibold text-home-text-dark text-sm mb-1">{step.title}</h3>
+                          <p className="text-home-text-dark/70 text-xs leading-relaxed">{step.desc}</p>
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
                 </motion.div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
 

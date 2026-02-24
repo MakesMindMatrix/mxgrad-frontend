@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useTheme } from '@/lib/theme-context';
 import { adminApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
-import { User, LogOut, LayoutDashboard, Compass, Shield, Sun, Moon, Bell } from 'lucide-react';
+import { User, LogOut, LayoutDashboard, Compass, Shield, Sun, Moon, Bell, Home } from 'lucide-react';
 
 function AdminNotifications() {
   const [open, setOpen] = useState(false);
@@ -66,6 +66,7 @@ export default function Navbar() {
   const location = useLocation();
   const isHome = location.pathname === '/';
   const isRegister = location.pathname === '/register';
+  const isLogin = location.pathname === '/login';
 
   // On home we use the entrance header; don't render this navbar
   if (isHome) return null;
@@ -73,23 +74,34 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-nav text-nav border-b border-white/10 shadow-sm">
       <div className="container mx-auto flex items-center justify-between h-14 px-4">
-        <Link
-          to={
-            isAuthenticated && user
-              ? user.role === 'ADMIN'
-                ? '/admin/dashboard'
-                : user.role === 'GCC'
-                  ? '/gcc/dashboard'
-                  : '/startup/dashboard'
-              : '/'
-          }
-          className="flex items-center gap-2 font-bold text-white"
-        >
-          <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">G</span>
-          </div>
-          <span>GCC-Startup Connect</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          {(isLogin || isRegister) && (
+            <Link
+              to="/"
+              className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white transition"
+            >
+              <Home className="h-4 w-4" />
+              Home
+            </Link>
+          )}
+          <Link
+            to={
+              isAuthenticated && user
+                ? user.role === 'ADMIN'
+                  ? '/admin/dashboard'
+                  : user.role === 'GCC'
+                    ? '/gcc/dashboard'
+                    : '/startup/dashboard'
+                : '/'
+            }
+            className="flex items-center gap-2 font-bold text-white"
+          >
+            <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+              <span className="text-white font-bold text-sm">G</span>
+            </div>
+            <span>GCC-Startup Connect</span>
+          </Link>
+        </div>
 
         <div className="flex items-center gap-2">
           <button
