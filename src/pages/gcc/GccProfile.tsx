@@ -120,6 +120,28 @@ export default function GccProfile() {
           </div>
 
           <div className="border-t border-border pt-6">
+            <h3 className="font-semibold text-foreground mb-4">Registration details (from signup)</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="gst_number">Company GSTN</Label>
+                <Input id="gst_number" value={profile.gst_number || ''} readOnly className="bg-muted/50" />
+              </div>
+              <div>
+                <Label htmlFor="additional_email">Additional email</Label>
+                <Input id="additional_email" type="email" value={profile.additional_email || ''} readOnly className="bg-muted/50" />
+              </div>
+              <div>
+                <Label htmlFor="mobile_primary">Mobile 1</Label>
+                <Input id="mobile_primary" value={profile.mobile_primary || ''} readOnly className="bg-muted/50" />
+              </div>
+              <div>
+                <Label htmlFor="mobile_secondary">Mobile 2</Label>
+                <Input id="mobile_secondary" value={profile.mobile_secondary || ''} readOnly className="bg-muted/50" />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-border pt-6">
             <h3 className="font-semibold text-foreground mb-4">Primary Contact Person</h3>
             <div className="space-y-4">
               <div>

@@ -55,26 +55,31 @@ export default function GccRequirements() {
         ) : (
           <div className="space-y-4">
             {list.map((r) => (
-              <Link key={r.id} to={`/gcc/requirements/${r.id}`} className="block">
-                <div className="page-card p-6 flex items-center justify-between hover:border-blue-400 transition-colors">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="text-xs text-muted-foreground font-mono">{r.anonymous_id || r.id.slice(0, 8)}</span>
-                      <span className="chip chip-default">{r.category}</span>
-                      <ApprovalBadge status={r.approval_status} />
-                    </div>
-                    <h3 className="font-semibold">{r.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{r.description}</p>
-                    {(r.approval_status === 'SENT_BACK' || r.approval_status === 'REJECTED') && r.admin_remarks && (
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">Admin: {r.admin_remarks}</p>
-                    )}
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {Number(r.interest_count) || 0} interest(s) · {r.status}
-                    </p>
+              <div key={r.id} className="page-card p-6 flex items-center justify-between hover:border-blue-400 transition-colors">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="text-xs text-muted-foreground font-mono">{r.anonymous_id || r.id.slice(0, 8)}</span>
+                    <span className="chip chip-default">{r.category}</span>
+                    <ApprovalBadge status={r.approval_status} />
                   </div>
-                  <Button variant="ghost" size="sm">View</Button>
+                  <h3 className="font-semibold">{r.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{r.description}</p>
+                  {(r.approval_status === 'SENT_BACK' || r.approval_status === 'REJECTED') && r.admin_remarks && (
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">Admin: {r.admin_remarks}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {Number(r.interest_count) || 0} interest(s) · {r.status}
+                  </p>
                 </div>
-              </Link>
+                <div className="flex items-center gap-2 shrink-0 ml-4">
+                  <Link to={`/gcc/requirements/${r.id}`}>
+                    <Button variant="outline" size="sm">View</Button>
+                  </Link>
+                  <Link to={`/gcc/requirements/${r.id}/edit`}>
+                    <Button variant="ghost" size="sm">Edit</Button>
+                  </Link>
+                </div>
+              </div>
             ))}
           </div>
         )}

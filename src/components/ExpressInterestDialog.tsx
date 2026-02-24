@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { Requirement } from '@/lib/api';
 import { requirementsApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -10,21 +10,47 @@ import { Paperclip, X } from 'lucide-react';
 const ACCEPT_DOCS = '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.png,.jpg,.jpeg';
 const MAX_MB = 10;
 
+export interface ExpressInterestInitialValues {
+  message?: string;
+  portfolio_link?: string;
+  proposed_timeline_start?: string;
+  proposed_timeline_end?: string;
+  proposed_budget?: number | null;
+}
+
 interface Props {
   requirement: Requirement | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialValues?: ExpressInterestInitialValues | null;
 }
 
-export default function ExpressInterestDialog({ requirement, open, onOpenChange }: Props) {
+export default function ExpressInterestDialog({ requirement, open, onOpenChange, initialValues }: Props) {
   const [message, setMessage] = useState('');
   const [portfolioLink, setPortfolioLink] = useState('');
+  const [proposedBudget, setProposedBudget] = useState('');
   const [timelineStart, setTimelineStart] = useState('');
   const [timelineEnd, setTimelineEnd] = useState('');
   const [attachment, setAttachment] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (open && initialValues) {
+      setMessage(initialValues.message ?? '');
+      setPortfolioLink(initialValues.portfolio_link ?? '');
+      setProposedBudget(initialValues.proposed_budget != null ? String(initialValues.proposed_budget) : '');
+      setTimelineStart(initialValues.proposed_timeline_start ?? '');
+      setTimelineEnd(initialValues.proposed_timeline_end ?? '');
+    } else if (open && !initialValues) {
+      setMessage('');
+      setPortfolioLink('');
+      setProposedBudget('');
+      setTimelineStart('');
+      setTimelineEnd('');
+    }
+  }, [open, initialValues]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -48,6 +74,7 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange 
         {
           message,
           portfolio_link: portfolioLink || undefined,
+          proposed_budget: proposedBudget ? Number(proposedBudget) : undefined,
           proposed_timeline_start: timelineStart || undefined,
           proposed_timeline_end: timelineEnd || undefined,
         },
@@ -55,6 +82,7 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange 
       );
       setMessage('');
       setPortfolioLink('');
+      setProposedBudget('');
       setTimelineStart('');
       setTimelineEnd('');
       setAttachment(null);
@@ -76,7 +104,7 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange 
     >
       <div className="absolute inset-0 bg-black/60" onClick={() => onOpenChange(false)} />
       <div className="relative page-card p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-semibold mb-2">Express interest</h2>
+        <h2 className="text-xl font-semibold mb-2">{initialValues ? 'Edit proposal' : 'Express interest'}</h2>
         <p className="text-sm text-muted-foreground mb-4">
           {requirement.anonymous_id || requirement.id.slice(0, 8)} — {requirement.title}
         </p>
@@ -92,6 +120,10 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange 
               rows={4}
               required
             />
+          </div>
+          <div>
+            <Label htmlFor="proposed_budget">Proposed budget ($ USD)</Label>
+            <Input id="proposed_budget" type="number" placeholder="0" value={proposedBudget} onChange={(e) => setProposedBudget(e.target.value)} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -143,7 +175,7 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange 
             </div>
           </div>
           <div className="flex gap-3">
-            <Button type="submit" disabled={loading}>{loading ? 'Submitting...' : 'Submit'}</Button>
+            <Button type="submit" disabled={loading}>{loading ? (initialValues ? 'Updating...' : 'Submitting...') : (initialValues ? 'Update proposal' : 'Submit')}</Button>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           </div>
         </form>

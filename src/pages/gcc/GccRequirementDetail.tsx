@@ -74,11 +74,13 @@ export default function GccRequirementDetail() {
               )}
             </div>
           )}
-          {req.approval_status === 'SENT_BACK' && (
-            <Link to={`/gcc/requirements/${req.id}/edit`} className="inline-block mb-4">
-              <Button variant="outline" size="sm">Edit and resubmit for approval</Button>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Link to={`/gcc/requirements/${req.id}/edit`}>
+              <Button variant="outline" size="sm">
+                {req.approval_status === 'SENT_BACK' ? 'Edit and resubmit for approval' : 'Edit'}
+              </Button>
             </Link>
-          )}
+          </div>
           <h1 className="text-2xl font-bold">{req.title}</h1>
           <p className="text-muted-foreground mt-2 whitespace-pre-wrap">{req.description}</p>
         </div>

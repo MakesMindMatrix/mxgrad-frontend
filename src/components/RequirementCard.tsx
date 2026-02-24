@@ -19,7 +19,7 @@ export default function RequirementCard({ requirement, onExpressInterest }: Prop
   const chipClass = CHIP_CLASS[requirement.category] || 'chip-default';
   const budgetStr =
     requirement.budget_min != null || requirement.budget_max != null
-      ? `${requirement.budget_currency || 'USD'} ${requirement.budget_min ?? '?'} - ${requirement.budget_max ?? '?'}`
+      ? `$ ${requirement.budget_min ?? '?'} - ${requirement.budget_max ?? '?'} USD`
       : 'Not specified';
   const timelineStr =
     requirement.timeline_start && requirement.timeline_end

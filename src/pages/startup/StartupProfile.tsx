@@ -96,6 +96,28 @@ export default function StartupProfile() {
               <Label>Contact phone</Label>
               <Input value={profile.contact_phone || ''} onChange={(e) => setProfile((p) => ({ ...p, contact_phone: e.target.value }))} />
             </div>
+
+            <div className="border-t border-border pt-4 mt-2">
+              <h4 className="font-semibold text-foreground mb-3 text-sm">Registration details (from signup)</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label>Company GSTN</Label>
+                  <Input value={profile.gst_number || ''} readOnly className="bg-muted/50" />
+                </div>
+                <div>
+                  <Label>Additional email</Label>
+                  <Input type="email" value={profile.additional_email || ''} readOnly className="bg-muted/50" />
+                </div>
+                <div>
+                  <Label>Mobile 1</Label>
+                  <Input value={profile.mobile_primary || ''} readOnly className="bg-muted/50" />
+                </div>
+                <div>
+                  <Label>Mobile 2</Label>
+                  <Input value={profile.mobile_secondary || ''} readOnly className="bg-muted/50" />
+                </div>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="team" className="page-card p-6 space-y-4">

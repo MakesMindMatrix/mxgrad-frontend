@@ -11,15 +11,33 @@ import { AlertTriangle, FileText } from 'lucide-react';
 const CATEGORIES = ['AI', 'DevOps', 'Cloud', 'Data', 'Security', 'Blockchain', 'IoT'];
 const PRIORITIES = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
 
-const NDA_AGREEMENT = `By posting a requirement on GCC-Startup Connect, you acknowledge and agree:
+const CONTROLLED_DISCLOSURE = `GCC-Startup Connect operates under a controlled disclosure framework.
+Company identities are not disclosed to startups until an engagement offer has been formally accepted through the platform.
 
-1. You will NOT include your company name, brand, or any information that could identify your organization in the requirement title or description. Requirements may be shared with startups before an NDA is in place.
+Users must not include any information that directly or indirectly identifies their organization within the requirement submission. GCC-Startup Connect shall not be liable for disclosures resulting from user-submitted content.`;
 
-2. Confidential information must only be shared after a mutual NDA has been executed. Do not disclose proprietary, confidential, or personally identifiable information in the requirement text.
+const NDA_AGREEMENT = `Confidentiality & NDA Agreement
 
-3. You are responsible for ensuring that the requirement description is suitable for sharing on an open marketplace. GCC-Startup Connect is not liable for any disclosure you make in the requirement.
+By posting a requirement on GCC-Startup Connect, you acknowledge and agree to the following:
 
-4. If you indicate "NDA required" for this requirement, you agree to execute an NDA with selected startups before sharing any confidential details.`;
+Anonymized Posting
+Your requirement will be visible to startups without revealing your organization's identity.
+
+Controlled Identity Disclosure
+Your company identity will only be shared with a startup after:
+• The startup expresses interest, and
+• You explicitly approve that interest through the platform.
+
+Confidential Information Handling
+No proprietary, confidential, strategic, financial, technical, or personally identifiable information should be included in the public requirement description.
+
+NDA Execution (If Required)
+If you select "NDA Required":
+• An NDA must be executed between your organization and the selected startup
+• Confidential information may only be shared after the NDA is fully executed
+
+User Responsibility
+You are solely responsible for ensuring that the content submitted is appropriate for publication in an anonymized marketplace. GCC-Startup Connect is not liable for disclosures made by the user within the requirement text.`;
 
 export default function GccRequirementNew() {
   const navigate = useNavigate();
@@ -88,12 +106,12 @@ export default function GccRequirementNew() {
             <Label htmlFor="title">Title *</Label>
             <Input id="title" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} required />
           </div>
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 flex gap-3">
-            <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-            <div className="text-sm text-amber-900">
-              <p className="font-semibold mb-1">Identity disclaimer</p>
+          <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800 p-4 flex gap-3">
+            <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div className="text-sm text-amber-900 dark:text-amber-100">
+              <p className="font-semibold mb-1">Controlled disclosure</p>
               <p>
-                Do not include your company name, brand, or any information that could identify your organization in the requirement description. Requirements may be shared with startups before an NDA is in place. Only share confidential details after a mutual NDA has been executed.
+                Do not include any information that directly or indirectly identifies your organization. Company identities are disclosed only after an engagement is formally accepted. GCC-Startup Connect is not liable for disclosures in user-submitted content.
               </p>
             </div>
           </div>
@@ -128,12 +146,12 @@ export default function GccRequirementNew() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="budget_min">Budget min</Label>
-              <Input id="budget_min" type="number" value={form.budget_min} onChange={(e) => setForm((f) => ({ ...f, budget_min: e.target.value }))} />
+              <Label htmlFor="budget_min">Budget min ($ USD)</Label>
+              <Input id="budget_min" type="number" placeholder="0" value={form.budget_min} onChange={(e) => setForm((f) => ({ ...f, budget_min: e.target.value }))} />
             </div>
             <div>
-              <Label htmlFor="budget_max">Budget max</Label>
-              <Input id="budget_max" type="number" value={form.budget_max} onChange={(e) => setForm((f) => ({ ...f, budget_max: e.target.value }))} />
+              <Label htmlFor="budget_max">Budget max ($ USD)</Label>
+              <Input id="budget_max" type="number" placeholder="0" value={form.budget_max} onChange={(e) => setForm((f) => ({ ...f, budget_max: e.target.value }))} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -172,10 +190,11 @@ export default function GccRequirementNew() {
           <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
             <div className="flex items-center gap-2 font-medium">
               <FileText className="h-4 w-4" />
-              NDA agreement
+              Confidentiality & NDA Agreement
             </div>
-            <div className="text-sm text-muted-foreground whitespace-pre-line max-h-48 overflow-y-auto pr-2">
-              {NDA_AGREEMENT}
+            <div className="text-sm text-muted-foreground whitespace-pre-line max-h-64 overflow-y-auto pr-2 space-y-4">
+              <p className="font-medium text-foreground/90">{CONTROLLED_DISCLOSURE}</p>
+              <p>{NDA_AGREEMENT}</p>
             </div>
             <div className="flex items-start gap-2">
               <input
@@ -186,7 +205,7 @@ export default function GccRequirementNew() {
                 className="rounded border-input mt-1"
               />
               <Label htmlFor="nda_agreed" className="cursor-pointer font-normal">
-                I have read and agree to the NDA agreement above. I will not declare my organization&apos;s identity or confidential information in the requirement description.
+                I have read and agree to the Confidentiality & NDA Agreement above. I will not include identity or confidential information in the requirement and accept user responsibility as stated.
               </Label>
             </div>
           </div>

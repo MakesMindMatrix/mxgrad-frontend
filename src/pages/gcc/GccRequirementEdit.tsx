@@ -18,6 +18,7 @@ export default function GccRequirementEdit() {
   const [loading, setLoading] = useState(false);
   const [loadErr, setLoadErr] = useState('');
   const [error, setError] = useState('');
+  const [approvalStatus, setApprovalStatus] = useState<string>('');
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -38,7 +39,8 @@ export default function GccRequirementEdit() {
     if (!id) return;
     gccApi
       .getRequirement(id)
-      .then((r: Requirement & { applications?: unknown[] }) => {
+      .then((r: Requirement & { applications?: unknown[]; approval_status?: string }) => {
+        setApprovalStatus(r.approval_status || '');
         setForm({
           title: r.title ?? '',
           description: r.description ?? '',
@@ -78,7 +80,7 @@ export default function GccRequirementEdit() {
         nda_required: form.nda_required,
         tech_stack: form.tech_stack ? form.tech_stack.split(',').map((s) => s.trim()).filter(Boolean) : undefined,
         skills: form.skills ? form.skills.split(',').map((s) => s.trim()).filter(Boolean) : undefined,
-        resubmit: true,
+        resubmit: approvalStatus === 'SENT_BACK',
       };
       await gccApi.updateRequirement(id, payload);
       navigate(`/gcc/requirements/${id}`);
@@ -107,7 +109,7 @@ export default function GccRequirementEdit() {
           <ArrowLeft className="h-4 w-4" />
           Back to requirement
         </Link>
-        <h1 className="text-3xl font-bold mb-8">Edit and resubmit for approval</h1>
+        <h1 className="text-3xl font-bold mb-8">{approvalStatus === 'SENT_BACK' ? 'Edit and resubmit for approval' : 'Edit requirement'}</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6 page-card p-6">
           {error && <div className="rounded-md bg-destructive/10 text-destructive text-sm p-3">{error}</div>}
@@ -145,12 +147,12 @@ export default function GccRequirementEdit() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="budget_min">Budget min</Label>
-              <Input id="budget_min" type="number" value={form.budget_min} onChange={(e) => setForm((f) => ({ ...f, budget_min: e.target.value }))} />
+              <Label htmlFor="budget_min">Budget min ($ USD)</Label>
+              <Input id="budget_min" type="number" placeholder="0" value={form.budget_min} onChange={(e) => setForm((f) => ({ ...f, budget_min: e.target.value }))} />
             </div>
             <div>
-              <Label htmlFor="budget_max">Budget max</Label>
-              <Input id="budget_max" type="number" value={form.budget_max} onChange={(e) => setForm((f) => ({ ...f, budget_max: e.target.value }))} />
+              <Label htmlFor="budget_max">Budget max ($ USD)</Label>
+              <Input id="budget_max" type="number" placeholder="0" value={form.budget_max} onChange={(e) => setForm((f) => ({ ...f, budget_max: e.target.value }))} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -187,7 +189,7 @@ export default function GccRequirementEdit() {
           </div>
           <div className="flex gap-3">
             <Button type="submit" disabled={loading}>
-              {loading ? 'Submitting...' : 'Resubmit for approval'}
+              {loading ? 'Saving...' : approvalStatus === 'SENT_BACK' ? 'Resubmit for approval' : 'Save changes'}
             </Button>
             <Button type="button" variant="outline" onClick={() => navigate(`/gcc/requirements/${id}`)}>
               Cancel

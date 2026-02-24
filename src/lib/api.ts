@@ -218,6 +218,10 @@ export interface GccProfile {
   year_established?: number;
   contact_designation?: string;
   contact_email?: string;
+  gst_number?: string;
+  additional_email?: string;
+  mobile_primary?: string;
+  mobile_secondary?: string;
 }
 
 export interface StartupProfile {
@@ -230,6 +234,10 @@ export interface StartupProfile {
   website?: string;
   linkedin_page?: string;
   contact_phone?: string;
+  gst_number?: string;
+  additional_email?: string;
+  mobile_primary?: string;
+  mobile_secondary?: string;
   founder_names?: string[];
   team_size?: number;
   key_team_members?: { name: string; role: string; linkedin?: string }[];
@@ -295,4 +303,8 @@ export interface ExpressionOfInterest {
   created_at?: string;
   attachment_path?: string | null;
   attachment_original_name?: string | null;
+  proposed_budget?: number | null;
+  proposed_timeline_start?: string | null;
+  proposed_timeline_end?: string | null;
+  portfolio_link?: string | null;
 }
