@@ -27,6 +27,7 @@ export default function Explore() {
     }
   }, [user?.role, navigate]);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
+  const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState('All');
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
@@ -41,7 +42,12 @@ export default function Explore() {
     const params: { category?: string; search?: string } = {};
     if (category && category !== 'All') params.category = category;
     if (search.trim()) params.search = search.trim();
-    requirementsApi.list(params).then(setRequirements).catch(() => setRequirements([]));
+    setLoading(true);
+    requirementsApi
+      .list(params)
+      .then(setRequirements)
+      .catch(() => setRequirements([]))
+      .finally(() => setLoading(false));
   }, [category, search]);
 
   const handleExpressInterest = (req: Requirement) => {
@@ -92,20 +98,25 @@ export default function Explore() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {requirements.map((r) => (
-            <RequirementCard
-              key={r.id}
-              requirement={r}
-              onExpressInterest={isAuthenticated ? handleExpressInterest : undefined}
-            />
-          ))}
-        </div>
-
-        {requirements.length === 0 && (
-          <div className="text-center py-20 text-muted-foreground">
-            No requirements found.
-          </div>
+        {loading ? (
+          <p className="text-muted-foreground py-8">Loading requirements...</p>
+        ) : (
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {requirements.map((r) => (
+                <RequirementCard
+                  key={r.id}
+                  requirement={r}
+                  onExpressInterest={isAuthenticated ? handleExpressInterest : undefined}
+                />
+              ))}
+            </div>
+            {requirements.length === 0 && (
+              <div className="text-center py-20 text-muted-foreground">
+                No requirements found.
+              </div>
+            )}
+          </>
         )}
       </div>
 

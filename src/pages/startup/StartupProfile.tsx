@@ -98,23 +98,24 @@ export default function StartupProfile() {
             </div>
 
             <div className="border-t border-border pt-4 mt-2">
-              <h4 className="font-semibold text-foreground mb-3 text-sm">Registration details (from signup)</h4>
+              <h4 className="font-semibold text-foreground mb-3 text-sm">Registration details (managed by platform)</h4>
+              <p className="text-xs text-muted-foreground mb-3">Values provided during account creation.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label>Company GSTN</Label>
-                  <Input value={profile.gst_number || ''} readOnly className="bg-muted/50" />
+                  <Input value={profile.gst_number || ''} readOnly className="bg-muted/50" placeholder="e.g. 27AABCU9603R1ZM" />
                 </div>
                 <div>
-                  <Label>Additional email</Label>
-                  <Input type="email" value={profile.additional_email || ''} readOnly className="bg-muted/50" />
+                  <Label>Additional email (optional)</Label>
+                  <Input type="email" value={profile.additional_email || ''} readOnly className="bg-muted/50" placeholder="another@company.com" />
                 </div>
                 <div>
                   <Label>Mobile 1</Label>
-                  <Input value={profile.mobile_primary || ''} readOnly className="bg-muted/50" />
+                  <Input value={profile.mobile_primary || ''} readOnly className="bg-muted/50" placeholder="+91 98765 43210" />
                 </div>
                 <div>
-                  <Label>Mobile 2</Label>
-                  <Input value={profile.mobile_secondary || ''} readOnly className="bg-muted/50" />
+                  <Label>Mobile 2 (optional)</Label>
+                  <Input value={profile.mobile_secondary || ''} readOnly className="bg-muted/50" placeholder="Optional" />
                 </div>
               </div>
             </div>

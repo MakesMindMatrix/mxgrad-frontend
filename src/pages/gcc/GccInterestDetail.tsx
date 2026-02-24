@@ -109,12 +109,8 @@ export default function GccInterestDetail() {
   }
 
   const proposal =
-    requirement.applications?.find((app) => {
-      const sameStartup = app.startup_name === interest.startup_name;
-      const appTime = new Date(app.created_at).getTime();
-      const interestTime = new Date(interest.created_at).getTime();
-      return sameStartup && appTime === interestTime;
-    }) || requirement.applications?.[0];
+    requirement.applications?.find((app) => app.startup_name === interest.startup_name) ||
+    requirement.applications?.[0];
 
   return (
     <div className="min-h-screen pt-6 pb-16">

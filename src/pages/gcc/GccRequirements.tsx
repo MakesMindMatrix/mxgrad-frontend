@@ -26,9 +26,14 @@ function ApprovalBadge({ status }: { status?: RequirementApprovalStatus | string
 
 export default function GccRequirements() {
   const [list, setList] = useState<Requirement[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    gccApi.getRequirements().then(setList).catch(() => setList([]));
+    gccApi
+      .getRequirements()
+      .then(setList)
+      .catch(() => setList([]))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -44,7 +49,9 @@ export default function GccRequirements() {
           </Link>
         </div>
 
-        {list.length === 0 ? (
+        {loading ? (
+          <p className="text-muted-foreground">Loading...</p>
+        ) : list.length === 0 ? (
           <div className="page-card p-12 text-center text-muted-foreground">
             <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>No requirements yet. Post your first tech need from deep-tech startups.</p>

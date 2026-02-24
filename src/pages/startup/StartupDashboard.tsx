@@ -8,9 +8,14 @@ import { FileText, User, Send } from 'lucide-react';
 export default function StartupDashboard() {
   const { user } = useAuth();
   const [interests, setInterests] = useState<{ id: string; requirement_title?: string; status: string }[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    requirementsApi.myInterests().then(setInterests).catch(() => setInterests([]));
+    requirementsApi
+      .myInterests()
+      .then(setInterests)
+      .catch(() => setInterests([]))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -50,7 +55,9 @@ export default function StartupDashboard() {
 
         <div className="mt-8 page-card p-6">
           <h2 className="font-semibold mb-4">Your expressions of interest</h2>
-          {interests.length === 0 ? (
+          {loading ? (
+            <p className="text-muted-foreground text-sm">Loading...</p>
+          ) : interests.length === 0 ? (
             <p className="text-muted-foreground text-sm">None yet. Browse requirements and express interest.</p>
           ) : (
             <ul className="space-y-3">

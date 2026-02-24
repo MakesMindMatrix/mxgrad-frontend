@@ -21,14 +21,45 @@ export default function GccRequirementDetail() {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const [req, setReq] = useState<RequirementWithApps | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const successMessage = location.state && typeof location.state === 'object' && 'message' in location.state ? (location.state as { message?: string }).message : undefined;
 
   useEffect(() => {
-    if (!id) return;
-    gccApi.getRequirement(id).then(setReq).catch(() => setReq(null));
+    if (!id) {
+      setLoadError('Invalid requirement ID');
+      setLoading(false);
+      return;
+    }
+    setLoadError('');
+    setLoading(true);
+    gccApi
+      .getRequirement(id)
+      .then((r) => {
+        setReq(r);
+        setLoadError('');
+      })
+      .catch(() => {
+        setReq(null);
+        setLoadError('Failed to load requirement');
+      })
+      .finally(() => setLoading(false));
   }, [id]);
 
-  if (!req) return <div className="min-h-screen pt-6 flex items-center justify-center">Loading...</div>;
+  if (loading) return <div className="min-h-screen pt-6 flex items-center justify-center">Loading...</div>;
+  if (loadError || !req) {
+    return (
+      <div className="min-h-screen pt-6 pb-16">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <Link to="/gcc/requirements" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
+            <ArrowLeft className="h-4 w-4" />
+            Back to requirements
+          </Link>
+          <p className="text-destructive">{loadError || 'Requirement not found.'}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-6 pb-16">
@@ -99,8 +130,8 @@ export default function GccRequirementDetail() {
         <h2 className="font-semibold mb-4">Applications / Expressions of interest</h2>
         {req.applications && req.applications.length > 0 ? (
           <div className="space-y-4">
-            {req.applications.map((app: { startup_name: string; startup_email: string; message?: string; status: string; created_at: string; attachment_path?: string; attachment_original_name?: string }, i: number) => (
-              <div key={i} className="page-card p-4">
+            {req.applications.map((app: { id?: string; startup_name: string; startup_email: string; message?: string; status: string; created_at: string; attachment_path?: string; attachment_original_name?: string }) => (
+              <div key={app.id ?? `${app.startup_email}-${app.created_at}`} className="page-card p-4">
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="font-medium">{app.startup_name}</p>

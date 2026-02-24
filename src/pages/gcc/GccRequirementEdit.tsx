@@ -76,7 +76,11 @@ export default function GccRequirementEdit() {
   const isDirty = !formEquals(form, initialFormRef.current);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      setLoadErr('Invalid requirement ID');
+      return;
+    }
+    setLoadErr('');
     gccApi
       .getRequirement(id)
       .then((r: Requirement & { applications?: unknown[]; approval_status?: string }) => {

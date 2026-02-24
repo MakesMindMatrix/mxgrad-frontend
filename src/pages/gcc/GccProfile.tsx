@@ -82,6 +82,7 @@ export default function GccProfile() {
       })
       .catch(() => {
         setProfile(emptyProfile);
+        setEditable(emptyEditable);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -164,13 +165,13 @@ export default function GccProfile() {
           <p className="text-muted-foreground">Manage your organization&apos;s profile information.</p>
         </div>
 
-        {/* Standard information - managed by platform */}
+        {/* Standard information - platform-managed (not from registration) */}
         <div className="page-card p-6 space-y-4">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-semibold">Standard information</h2>
               <p className="text-xs text-muted-foreground">
-                Managed by platform. Contact support to request changes.
+                Managed by platform. Set during onboarding. Contact support to request changes.
               </p>
             </div>
             <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground border border-dashed border-muted-foreground/40 rounded-full px-3 py-1">
@@ -184,6 +185,7 @@ export default function GccProfile() {
               <Input
                 value={profile.company_name || ''}
                 readOnly
+                placeholder="—"
                 className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
               />
             </div>
@@ -192,6 +194,7 @@ export default function GccProfile() {
               <Input
                 value={profile.parent_company || ''}
                 readOnly
+                placeholder="—"
                 className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
               />
             </div>
@@ -200,6 +203,7 @@ export default function GccProfile() {
               <Input
                 value={profile.year_established != null ? String(profile.year_established) : ''}
                 readOnly
+                placeholder="—"
                 className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
               />
             </div>
@@ -208,28 +212,35 @@ export default function GccProfile() {
               <Input
                 value={profile.industry || ''}
                 readOnly
+                placeholder="—"
                 className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
               />
             </div>
           </div>
 
+          {/* Registration details – same fields and labels as Create account (signup) */}
           <div className="mt-4 pt-4 border-t border-border/60">
             <h3 className="text-sm font-semibold mb-3">Registration details (managed by platform)</h3>
+            <p className="text-xs text-muted-foreground mb-3">
+              Values provided during account creation. Labels match the registration form.
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label className="text-xs font-medium text-muted-foreground">Company GSTN</Label>
                 <Input
                   value={profile.gst_number || ''}
                   readOnly
+                  placeholder="e.g. 27AABCU9603R1ZM"
                   className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
                 />
               </div>
               <div>
-                <Label className="text-xs font-medium text-muted-foreground">Additional email</Label>
+                <Label className="text-xs font-medium text-muted-foreground">Additional email (optional)</Label>
                 <Input
                   type="email"
                   value={profile.additional_email || ''}
                   readOnly
+                  placeholder="another@company.com"
                   className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
                 />
               </div>
@@ -238,15 +249,37 @@ export default function GccProfile() {
                 <Input
                   value={profile.mobile_primary || ''}
                   readOnly
+                  placeholder="+91 98765 43210"
                   className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
                 />
               </div>
               <div>
-                <Label className="text-xs font-medium text-muted-foreground">Mobile 2</Label>
+                <Label className="text-xs font-medium text-muted-foreground">Mobile 2 (optional)</Label>
                 <Input
                   value={profile.mobile_secondary || ''}
                   readOnly
+                  placeholder="Optional"
                   className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label className="text-xs font-medium text-muted-foreground">Company website</Label>
+                <Input
+                  type="url"
+                  value={profile.website || ''}
+                  readOnly
+                  placeholder="https://www.example.com"
+                  className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label className="text-xs font-medium text-muted-foreground">Short description</Label>
+                <Textarea
+                  value={profile.description || ''}
+                  readOnly
+                  rows={3}
+                  placeholder="Brief description of your company or organization..."
+                  className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground resize-none"
                 />
               </div>
             </div>
