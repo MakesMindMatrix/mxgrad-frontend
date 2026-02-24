@@ -16,11 +16,13 @@ export async function api<T>(
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-  const data = await res.json().catch(() => ({}));
+  const data = res.status === 204 || res.headers.get('content-length') === '0'
+    ? {}
+    : await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    const err = new ApiError(res.status, data.message || 'Request failed', data.code);
-    err.data = data;
+    const err = new ApiError(res.status, (data && typeof data === 'object' && 'message' in data ? (data as { message: string }).message : null) || 'Request failed', (data as { code?: string })?.code);
+    err.data = data as Record<string, unknown>;
     throw err;
   }
   return data as T;
@@ -144,7 +146,67 @@ export const adminApi = {
     api<{ id: string; status: string }>(`/admin/eoi-approvals/${eoiId}/reject`, { method: 'POST' }),
   deleteEoi: (eoiId: string) =>
     api<void>(`/admin/eoi-approvals/${eoiId}`, { method: 'DELETE' }),
+  // Requirements CRUD
+  getRequirements: (params?: { category?: string; status?: string; approval_status?: string; search?: string }) => {
+    const q = new URLSearchParams();
+    if (params?.category) q.set('category', params.category);
+    if (params?.status) q.set('status', params.status);
+    if (params?.approval_status) q.set('approval_status', params.approval_status);
+    if (params?.search?.trim()) q.set('search', params.search.trim());
+    return api<AdminRequirementListItem[]>(`/admin/requirements${q.toString() ? `?${q}` : ''}`);
+  },
+  getRequirement: (requirementId: string) =>
+    api<AdminRequirementDetail>(`/admin/requirements/${requirementId}`),
+  createRequirement: (data: AdminRequirementCreate) =>
+    api<{ id: string; title: string; category: string; status: string; approval_status: string; created_at: string }>(
+      '/admin/requirements',
+      { method: 'POST', body: JSON.stringify(data) }
+    ),
+  updateRequirement: (requirementId: string, data: Partial<AdminRequirementUpdate>) =>
+    api<{ id: string; title: string; category: string; status: string; approval_status: string; updated_at: string }>(
+      `/admin/requirements/${requirementId}`,
+      { method: 'PUT', body: JSON.stringify(data) }
+    ),
+  deleteRequirement: (requirementId: string) =>
+    api<void>(`/admin/requirements/${requirementId}`, { method: 'DELETE' }),
 };
+
+export interface AdminRequirementListItem extends Requirement {
+  gcc_user_id: string;
+  gcc_name: string;
+  gcc_email: string;
+  interest_count?: number | string;
+}
+
+export interface AdminRequirementDetail extends AdminRequirementListItem {
+  admin_remarks?: string | null;
+  admin_remarks_at?: string | null;
+}
+
+export interface AdminRequirementUpdate {
+  title?: string;
+  description?: string;
+  category?: string;
+  priority?: string;
+  status?: string;
+  approval_status?: string;
+  budget_min?: number;
+  budget_max?: number;
+  budget_currency?: string;
+  timeline_start?: string;
+  timeline_end?: string;
+  tech_stack?: string[];
+  skills?: string[];
+  industry_type?: string;
+  nda_required?: boolean;
+}
+
+export interface AdminRequirementCreate extends AdminRequirementUpdate {
+  gcc_user_id: string;
+  title: string;
+  description: string;
+  category: string;
+}
 
 // GCC
 export interface StartupListItem {

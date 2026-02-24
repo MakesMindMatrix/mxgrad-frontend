@@ -54,6 +54,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     navItems.push({ to: '/admin/requirement-approvals', label: 'Requirement approvals', icon: FileText });
     navItems.push({ to: '/admin/eoi-approvals', label: 'Expression of interest approvals', icon: Send });
     navItems.push({ to: '/admin/users', label: 'All Users', icon: Users });
+    navItems.push({ to: '/admin/requirements', label: 'All Requirements', icon: FileText });
     navItems.push({ to: '/admin/activities', label: 'Activities', icon: Activity });
     navItems.push({ to: '/admin/projects', label: 'Active Projects', icon: FolderKanban });
     navItems.push({ to: '/admin/explore', label: 'Explore', icon: Compass });

@@ -108,8 +108,8 @@ export default function StartupProfile() {
                   <Input value={user?.email ?? ''} readOnly className="bg-muted/50 mt-1" />
                 </div>
                 <div>
-                  <Label className="text-muted-foreground text-xs">Full name</Label>
-                  <Input value={user?.name ?? ''} readOnly className="bg-muted/50 mt-1" />
+                  <Label className="text-muted-foreground text-xs">Entity name</Label>
+                  <Input value={profile.company_name || user?.name ?? ''} readOnly className="bg-muted/50 mt-1" />
                 </div>
                 <div>
                   <Label className="text-muted-foreground text-xs">Company website</Label>

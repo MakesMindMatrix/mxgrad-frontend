@@ -14,7 +14,6 @@ export default function RegisterForm() {
   const roleParam = searchParams.get('role') as Role | null;
   const [role, setRole] = useState<Role>(roleParam === 'GCC' || roleParam === 'STARTUP' ? roleParam : 'GCC');
 
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [companyWebsite, setCompanyWebsite] = useState('');
@@ -24,7 +23,7 @@ export default function RegisterForm() {
   const [mobilePrimary, setMobilePrimary] = useState('');
   const [mobileSecondary, setMobileSecondary] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [companyName, setCompanyName] = useState('');
+  const [companyName, setCompanyName] = useState(''); // GCC name or Entity name (first field, mapped to profile)
   const [parentCompany, setParentCompany] = useState('');
   const [yearEstablished, setYearEstablished] = useState('');
   const [industry, setIndustry] = useState('');
@@ -58,7 +57,7 @@ export default function RegisterForm() {
     setLoading(true);
     try {
       await register({
-        name,
+        name: companyName.trim(),
         email,
         password,
         role,
@@ -68,7 +67,7 @@ export default function RegisterForm() {
         additional_email: role === 'STARTUP' ? additionalEmail.trim() || undefined : undefined,
         mobile_primary: mobilePrimary.trim() || undefined,
         mobile_secondary: role === 'STARTUP' ? mobileSecondary.trim() || undefined : undefined,
-        company_name: role === 'GCC' ? companyName.trim() || undefined : undefined,
+        company_name: companyName.trim() || undefined,
         parent_company: role === 'GCC' ? parentCompany.trim() || undefined : undefined,
         year_established: role === 'GCC' && yearEstablished.trim() ? parseInt(yearEstablished, 10) : undefined,
         industry: role === 'GCC' ? industry.trim() || undefined : undefined,
@@ -120,8 +119,15 @@ export default function RegisterForm() {
               <div className="rounded-lg bg-destructive/10 text-destructive text-sm p-3 border border-destructive/20">{error}</div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="name">Full name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required className="rounded-lg" />
+              <Label htmlFor="entity_name">{role === 'GCC' ? 'GCC Name *' : 'Entity name *'}</Label>
+              <Input
+                id="entity_name"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                required
+                className="rounded-lg"
+                placeholder={role === 'GCC' ? 'Your GCC / company name' : 'Your startup or entity name'}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email (login) *</Label>
@@ -142,10 +148,6 @@ export default function RegisterForm() {
             )}
             {role === 'GCC' && (
               <>
-                <div className="space-y-2">
-                  <Label htmlFor="company_name">GCC Name *</Label>
-                  <Input id="company_name" value={companyName} onChange={(e) => setCompanyName(e.target.value)} required className="rounded-lg" placeholder="Your GCC / company name" />
-                </div>
                 <div className="space-y-2">
                   <Label htmlFor="parent_company">Parent Company</Label>
                   <Input id="parent_company" value={parentCompany} onChange={(e) => setParentCompany(e.target.value)} className="rounded-lg" placeholder="Parent organization name" />

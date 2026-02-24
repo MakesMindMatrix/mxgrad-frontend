@@ -4,6 +4,7 @@ import type { User } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Users, Building2, Rocket, Check, X, Pencil, Trash2, RefreshCw } from 'lucide-react';
 
 type RoleFilter = 'ALL' | 'GCC' | 'STARTUP';
@@ -400,15 +401,6 @@ export default function AdminUsers() {
                       </Button>
                     )}
                   </div>
-                  {deleteConfirm === detail.user.id && (
-                    <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-4 flex flex-col gap-2">
-                      <p className="text-sm font-medium">Permanently delete this user? This will erase the user account and all their profile data from the database (GCC/Startup profile, requirements, expressions of interest). This cannot be undone.</p>
-                      <div className="flex gap-2">
-                        <Button variant="destructive" size="sm" onClick={() => handleDelete(detail.user.id)}>Delete user</Button>
-                        <Button variant="outline" size="sm" onClick={() => setDeleteConfirm(null)}>Cancel</Button>
-                      </div>
-                    </div>
-                  )}
                 </>
               ) : (
                 <p className="text-muted-foreground">Could not load user.</p>
@@ -416,6 +408,22 @@ export default function AdminUsers() {
             </div>
           </div>
         </div>
+      )}
+
+      {deleteConfirm && (
+        <ConfirmDialog
+          open
+          onClose={() => setDeleteConfirm(null)}
+          title="Delete user?"
+          message={`Permanently delete ${users.find((u) => u.id === deleteConfirm)?.name ?? 'this user'}? This will erase the user account and all their profile data (GCC/Startup profile, requirements, expressions of interest). This cannot be undone.`}
+          confirmLabel="Yes, delete user"
+          cancelLabel="No"
+          variant="destructive"
+          onConfirm={async () => {
+            await handleDelete(deleteConfirm);
+            setDeleteConfirm(null);
+          }}
+        />
       )}
     </div>
   );
