@@ -67,6 +67,7 @@ export default function App() {
 
         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/admin/dashboard" element={<DashboardRoute requireAdmin><AdminDashboard /></DashboardRoute>} />
+        <Route path="/admin/explore" element={<DashboardRoute requireAdmin><Explore /></DashboardRoute>} />
         <Route path="/admin/approvals" element={<DashboardRoute requireAdmin><AdminApprovals /></DashboardRoute>} />
         <Route path="/admin/users" element={<DashboardRoute requireAdmin><AdminUsers /></DashboardRoute>} />
         <Route path="/admin/activities" element={<DashboardRoute requireAdmin><AdminActivities /></DashboardRoute>} />

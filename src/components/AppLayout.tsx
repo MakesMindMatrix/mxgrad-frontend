@@ -53,7 +53,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     navItems.push({ to: '/admin/users', label: 'All Users', icon: Users });
     navItems.push({ to: '/admin/activities', label: 'Activities', icon: Activity });
     navItems.push({ to: '/admin/projects', label: 'Active Projects', icon: FolderKanban });
-    navItems.push({ to: '/explore', label: 'Explore', icon: Compass });
+    navItems.push({ to: '/admin/explore', label: 'Explore', icon: Compass });
   }
 
   return (
@@ -99,7 +99,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
         <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
-              const isActive = location.pathname === item.to || (item.to !== '/explore' && item.to !== '/gcc/explore' && item.to !== '/startup/explore' && location.pathname.startsWith(item.to));
+              const isActive = location.pathname === item.to || (item.to !== '/explore' && item.to !== '/admin/explore' && item.to !== '/gcc/explore' && item.to !== '/startup/explore' && location.pathname.startsWith(item.to));
               return (
                 <Link
                   key={item.to + item.label}

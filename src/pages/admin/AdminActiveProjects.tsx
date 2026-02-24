@@ -62,7 +62,7 @@ export default function AdminActiveProjects() {
                       </span>
                     </div>
                   </div>
-                  <Link to={`/explore`} className="text-sm text-primary hover:underline shrink-0">
+                  <Link to="/admin/explore" className="text-sm text-primary hover:underline shrink-0">
                     View on Explore →
                   </Link>
                 </div>
