@@ -76,6 +76,38 @@
   --ring: 217 91% 60%;
 }
 
+/* Date input: visible calendar icon in both light and dark themes */
+input[type="date"] {
+  color-scheme: light;
+}
+.theme-dark input[type="date"] {
+  color-scheme: dark;
+}
+/* WebKit (Chrome, Safari, Edge): calendar picker icon contrast */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
+  filter: none;
+}
+.theme-dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.9;
+}
+/* Ensure date input text and icon area have enough contrast */
+input[type="date"]::-webkit-datetime-edit {
+  color: inherit;
+}
+.theme-dark input[type="date"]::-webkit-datetime-edit {
+  color: hsl(0 0% 98%);
+}
+
+/* Number input: visible spinners in dark theme */
+.theme-dark input[type="number"]::-webkit-inner-spin-button,
+.theme-dark input[type="number"]::-webkit-outer-spin-button {
+  filter: invert(1);
+  opacity: 0.8;
+}
+
 /* Smooth scroll */
 html {
   scroll-behavior: smooth;
