@@ -83,18 +83,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <button
             type="button"
             onClick={() => setSidebarOpen((o) => !o)}
-            className="rounded-md text-white/80 hover:bg-white/10 hover:text-white flex items-center gap-2 p-2"
+            className="rounded-md text-white/80 hover:bg-white/10 hover:text-white p-2"
             aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
             title={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
           >
-            {sidebarOpen ? (
-              <>
-                <PanelLeftClose className="h-5 w-5" />
-                <span className="text-sm font-medium">Close</span>
-              </>
-            ) : (
-              <ChevronRight className="h-5 w-5" />
-            )}
+            {sidebarOpen ? <PanelLeftClose className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
           </button>
         </div>
         <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
@@ -125,12 +118,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
-            className="fixed left-16 top-20 z-30 flex items-center gap-1.5 rounded-r-md border border-white/10 bg-sidebar px-2 py-2 text-white/90 shadow-md hover:bg-white/10 hover:text-white transition"
+            className="fixed left-16 top-20 z-30 flex items-center justify-center rounded-r-md border border-white/10 bg-sidebar p-2 text-white/90 shadow-md hover:bg-white/10 hover:text-white transition"
             aria-label="Open sidebar"
             title="Open sidebar"
           >
             <ChevronRight className="h-5 w-5" />
-            <span className="text-sm font-medium">Open sidebar</span>
           </button>
         )}
         <div className="flex-1 min-h-0 overflow-y-auto">

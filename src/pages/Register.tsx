@@ -17,7 +17,8 @@ export default function Register() {
   const [additionalEmail, setAdditionalEmail] = useState('');
   const [mobilePrimary, setMobilePrimary] = useState('');
   const [mobileSecondary, setMobileSecondary] = useState('');
-  const [role, setRole] = useState<'GCC' | 'STARTUP' | null>(null);
+  const [role, setRole] = useState<'GCC' | 'STARTUP'>('GCC');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -26,7 +27,10 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!role) return;
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
     setError('');
     setLoading(true);
     try {
@@ -71,51 +75,16 @@ export default function Register() {
       <AuthPageBackground />
       <div className="w-full max-w-lg relative z-0">
         <div className="page-card p-8 shadow-xl">
-          <div className="mb-8">
-            <h1 className="text-xl font-bold text-foreground">Organization Onboarding</h1>
-            <p className="text-muted-foreground text-sm mt-1">Select your registration category.</p>
-          </div>
+          <h1 className="text-xl font-bold text-foreground mb-2">Create account</h1>
+          <p className="text-sm text-muted-foreground mb-6 text-center">
+            {role === 'GCC' ? (
+              <>Not a GCC Entity? <button type="button" onClick={() => setRole('STARTUP')} className="text-primary hover:underline font-medium">Go to Startup Entity</button></>
+            ) : (
+              <>Not a Startup Entity? <button type="button" onClick={() => setRole('GCC')} className="text-primary hover:underline font-medium">Go to GCC Entity</button></>
+            )}
+          </p>
 
-          {/* Portal choice */}
-          <div className="space-y-3 mb-8">
-            <button
-              type="button"
-              onClick={() => setRole('STARTUP')}
-              className={`w-full flex items-center justify-between rounded-lg border px-4 py-3 text-left transition-colors ${
-                role === 'STARTUP'
-                  ? 'border-primary bg-primary/5 text-foreground'
-                  : 'border-border bg-card hover:border-primary/50'
-              }`}
-            >
-              <span className="font-medium text-sm">Startup Entity</span>
-              <span className="text-muted-foreground text-xs">Emerging technology companies and scale-ups</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setRole('GCC')}
-              className={`w-full flex items-center justify-between rounded-lg border px-4 py-3 text-left transition-colors ${
-                role === 'GCC'
-                  ? 'border-primary bg-primary/5 text-foreground'
-                  : 'border-border bg-card hover:border-primary/50'
-              }`}
-            >
-              <span className="font-medium text-sm">GCC Entity</span>
-              <span className="text-muted-foreground text-xs">Global Capability Centers and corporate innovation units.</span>
-            </button>
-          </div>
-          {role && (
-            <p className="text-sm text-muted-foreground mb-6 text-center">
-              {role === 'GCC' ? (
-                <>Not a GCC Entity? <button type="button" onClick={() => setRole('STARTUP')} className="text-primary hover:underline font-medium">Go to Startup Entity</button></>
-              ) : (
-                <>Not a Startup Entity? <button type="button" onClick={() => setRole('GCC')} className="text-primary hover:underline font-medium">Go to GCC Entity</button></>
-              )}
-            </p>
-          )}
-
-          {role && (
-            <>
-              <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
                 {error && (
                   <div className="rounded-lg bg-destructive/10 text-destructive text-sm p-3 border border-destructive/20">{error}</div>
                 )}
@@ -141,6 +110,10 @@ export default function Register() {
                 <div className="space-y-2">
                   <Label htmlFor="password">Password (min 6 characters)</Label>
                   <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required className="rounded-lg" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm_password">Confirm password</Label>
+                  <Input id="confirm_password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} minLength={6} required className="rounded-lg" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="gst_number">Company GSTN</Label>
@@ -204,8 +177,6 @@ export default function Register() {
                   {loading ? 'Creating account...' : 'Create account'}
                 </Button>
               </form>
-            </>
-          )}
 
           <div className="mt-8 pt-6 border-t border-border text-center">
             <p className="text-sm text-muted-foreground">

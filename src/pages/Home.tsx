@@ -15,8 +15,8 @@ export default function Home() {
         <HeroSection />
         <ForEnterprisesSection />
         <ForStartupsSection />
-        <StatsSection />
         <HowItWorksSection />
+        <StatsSection />
         <CTASection />
         <FooterSection />
       </main>

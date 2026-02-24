@@ -101,7 +101,7 @@ export default function Navbar() {
             {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
           </button>
 
-          {!isRegister && user?.role !== 'GCC' && user?.role !== 'STARTUP' && (
+          {!isRegister && !isAuthenticated && (
             <Link to="/explore">
               <Button variant="ghost" size="sm" className="gap-2 text-white hover:bg-white/10 hover:text-white">
                 <Compass className="h-4 w-4" />
