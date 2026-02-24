@@ -192,19 +192,35 @@ export default function AdminUsers() {
                     Registered {(u.createdAt ?? u.created_at) ? new Date((u.createdAt ?? u.created_at) as string).toLocaleDateString() : '—'}
                   </p>
                 </div>
-                {status === 'PENDING' && (
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    className="shrink-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleApprove(u.id);
-                    }}
-                  >
-                    Approve
-                  </Button>
-                )}
+                <div className="flex items-center gap-2 shrink-0">
+                  {status === 'PENDING' && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleApprove(u.id);
+                      }}
+                    >
+                      Approve
+                    </Button>
+                  )}
+                  {u.role !== 'ADMIN' && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDetailUserId(u.id);
+                        setDeleteConfirm(u.id);
+                      }}
+                      title="Delete user and all profile data"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
             );})}
           </div>
@@ -232,8 +248,8 @@ export default function AdminUsers() {
                     <Button variant="ghost" size="sm" onClick={openEdit} className="gap-1">
                       <Pencil className="h-4 w-4" /> Edit
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => setDeleteConfirm(detail.user.id)} className="text-destructive hover:text-destructive">
-                      <Trash2 className="h-4 w-4" />
+                    <Button variant="ghost" size="sm" onClick={() => setDeleteConfirm(detail.user.id)} className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10">
+                      <Trash2 className="h-4 w-4" /> Delete user
                     </Button>
                   </>
                 )}
@@ -348,9 +364,9 @@ export default function AdminUsers() {
                   </div>
                   {deleteConfirm === detail.user.id && (
                     <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-4 flex flex-col gap-2">
-                      <p className="text-sm font-medium">Delete this user and their profile? This cannot be undone.</p>
+                      <p className="text-sm font-medium">Permanently delete this user? This will erase the user account and all their profile data from the database (GCC/Startup profile, requirements, expressions of interest). This cannot be undone.</p>
                       <div className="flex gap-2">
-                        <Button variant="destructive" size="sm" onClick={() => handleDelete(detail.user.id)}>Delete</Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleDelete(detail.user.id)}>Delete user</Button>
                         <Button variant="outline" size="sm" onClick={() => setDeleteConfirm(null)}>Cancel</Button>
                       </div>
                     </div>

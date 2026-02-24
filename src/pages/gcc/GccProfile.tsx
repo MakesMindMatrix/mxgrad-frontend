@@ -250,72 +250,6 @@ export default function GccProfile() {
           <p className="text-muted-foreground">Manage your organization&apos;s profile information.</p>
         </div>
 
-        {/* Primary Contact Person – moved above Standard information */}
-        <div className="page-card p-6 space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="text-lg font-semibold">Primary Contact Person</h2>
-            {!editMode ? (
-              <Button type="button" variant="outline" size="sm" onClick={() => setEditMode(true)}>
-                Edit profile
-              </Button>
-            ) : null}
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="profile_contact_person">Name</Label>
-              <Input
-                id="profile_contact_person"
-                value={editable.contact_person}
-                onChange={(e) => setEditable((p) => ({ ...p, contact_person: e.target.value }))}
-                readOnly={!editMode}
-                className={!editMode ? 'bg-muted/40 border-border/60' : ''}
-              />
-            </div>
-            <div>
-              <Label htmlFor="profile_contact_designation">Designation</Label>
-              <Input
-                id="profile_contact_designation"
-                value={editable.contact_designation}
-                onChange={(e) => setEditable((p) => ({ ...p, contact_designation: e.target.value }))}
-                readOnly={!editMode}
-                className={!editMode ? 'bg-muted/40 border-border/60' : ''}
-              />
-            </div>
-            <div>
-              <Label htmlFor="profile_contact_email">Work Email</Label>
-              <Input
-                id="profile_contact_email"
-                type="email"
-                value={editable.contact_email}
-                onChange={(e) => setEditable((p) => ({ ...p, contact_email: e.target.value }))}
-                readOnly={!editMode}
-                className={!editMode ? 'bg-muted/40 border-border/60' : ''}
-              />
-            </div>
-            <div>
-              <Label htmlFor="profile_phone">Phone (optional)</Label>
-              <Input
-                id="profile_phone"
-                type="tel"
-                value={editable.phone}
-                onChange={(e) => setEditable((p) => ({ ...p, phone: e.target.value }))}
-                readOnly={!editMode}
-                className={!editMode ? 'bg-muted/40 border-border/60' : ''}
-              />
-            </div>
-          </div>
-          {editMode && (
-            <div className="flex gap-3 pt-2">
-              <Button type="button" onClick={saveProfile} disabled={saving}>
-                {saving ? 'Saving...' : 'Save changes'}
-              </Button>
-              <Button type="button" variant="outline" disabled={saving} onClick={handleCancel}>
-                Cancel
-              </Button>
-            </div>
-          )}
-        </div>
-
         {/* Standard information – only empty details can be edited */}
         <div className="page-card p-6 space-y-4">
           <div>
@@ -414,12 +348,6 @@ export default function GccProfile() {
             </div>
           </div>
 
-          <div className="flex justify-end pt-2">
-            <Button type="button" onClick={saveProfile} disabled={saving}>
-              {saving ? 'Saving...' : 'Update details'}
-            </Button>
-          </div>
-
           {/* Registration details (managed by platform) – email, GSTN, Mobile from signup */}
           <div className="mt-4 pt-4 border-t border-border/60">
             <h3 className="text-sm font-semibold mb-3">Registration details (managed by platform)</h3>
@@ -438,6 +366,91 @@ export default function GccProfile() {
               </div>
             </div>
           </div>
+
+          {/* Primary Contact Person – inside Standard information, below Registration details */}
+          <div className="mt-4 pt-4 border-t border-border/60">
+            <div className="flex items-center justify-between gap-4 mb-3">
+              <h3 className="text-sm font-semibold">Primary Contact Person</h3>
+              {!editMode ? (
+                <Button type="button" variant="outline" size="sm" onClick={() => setEditMode(true)}>
+                  Edit profile
+                </Button>
+              ) : null}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs font-medium text-muted-foreground" htmlFor="profile_contact_person">Name</Label>
+                <Input
+                  id="profile_contact_person"
+                  value={editable.contact_person}
+                  onChange={(e) => setEditable((p) => ({ ...p, contact_person: e.target.value }))}
+                  readOnly={!editMode}
+                  className={`mt-1 ${!editMode ? 'bg-muted/40 border-border/60' : ''}`}
+                />
+              </div>
+              <div>
+                <Label className="text-xs font-medium text-muted-foreground" htmlFor="profile_contact_designation">Designation</Label>
+                <Input
+                  id="profile_contact_designation"
+                  value={editable.contact_designation}
+                  onChange={(e) => setEditable((p) => ({ ...p, contact_designation: e.target.value }))}
+                  readOnly={!editMode}
+                  className={`mt-1 ${!editMode ? 'bg-muted/40 border-border/60' : ''}`}
+                />
+              </div>
+              <div>
+                <Label className="text-xs font-medium text-muted-foreground" htmlFor="profile_contact_email">Work Email</Label>
+                <Input
+                  id="profile_contact_email"
+                  type="email"
+                  value={editable.contact_email}
+                  onChange={(e) => setEditable((p) => ({ ...p, contact_email: e.target.value }))}
+                  readOnly={!editMode}
+                  className={`mt-1 ${!editMode ? 'bg-muted/40 border-border/60' : ''}`}
+                />
+              </div>
+              <div>
+                <Label className="text-xs font-medium text-muted-foreground" htmlFor="profile_phone">Phone (optional)</Label>
+                <Input
+                  id="profile_phone"
+                  type="tel"
+                  value={editable.phone}
+                  onChange={(e) => setEditable((p) => ({ ...p, phone: e.target.value }))}
+                  readOnly={!editMode}
+                  className={`mt-1 ${!editMode ? 'bg-muted/40 border-border/60' : ''}`}
+                />
+              </div>
+            </div>
+            {editMode && (
+              <div className="flex gap-3 pt-2">
+                <Button type="button" onClick={saveProfile} disabled={saving}>
+                  {saving ? 'Saving...' : 'Save changes'}
+                </Button>
+                <Button type="button" variant="outline" disabled={saving} onClick={handleCancel}>
+                  Cancel
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Update details – only when any standard information field is empty */}
+          {(() => {
+            const hasCompanyName = !!(profile.company_name || standardDraft.company_name);
+            const hasParentCompany = !!(profile.parent_company || standardDraft.parent_company);
+            const hasYearEst = profile.year_established != null || !!(standardDraft.year_established && String(standardDraft.year_established).trim());
+            const hasIndustry = !!(profile.industry || standardDraft.industry);
+            const hasHeadquarters = !!(profile.headquarters_location || standardDraft.headquarters_location);
+            const hasWebsite = !!(profile.website || standardDraft.website);
+            const hasEmptyStandardInfo = !hasCompanyName || !hasParentCompany || !hasYearEst || !hasIndustry || !hasHeadquarters || !hasWebsite;
+            if (!hasEmptyStandardInfo) return null;
+            return (
+              <div className="flex justify-end pt-4 mt-4 border-t border-border/60">
+                <Button type="button" variant="destructive" onClick={saveProfile} disabled={saving}>
+                  {saving ? 'Saving...' : 'Update details'}
+                </Button>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Editable information */}
