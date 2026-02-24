@@ -109,7 +109,7 @@ export default function StartupProfile() {
                 </div>
                 <div>
                   <Label className="text-muted-foreground text-xs">Entity name</Label>
-                  <Input value={profile.company_name || user?.name ?? ''} readOnly className="bg-muted/50 mt-1" />
+                  <Input value={profile.company_name || user?.name || ''} readOnly className="bg-muted/50 mt-1" />
                 </div>
                 <div>
                   <Label className="text-muted-foreground text-xs">Company website</Label>
