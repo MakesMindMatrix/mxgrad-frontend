@@ -26,13 +26,31 @@ const emptyProfile: Partial<GccProfile> = {
   contact_email: '',
 };
 
-type EditableFields = {
+type StandardDraft = {
+  company_name: string;
+  parent_company: string;
+  year_established: string;
+  industry: string;
   headquarters_location: string;
+  website: string;
+};
+
+const emptyStandardDraft: StandardDraft = {
+  company_name: '',
+  parent_company: '',
+  year_established: '',
+  industry: '',
+  headquarters_location: '',
+  website: '',
+};
+
+type EditableFields = {
   gcc_locations: string;
   size: string;
-  website: string;
   linkedin: string;
   description: string;
+  additional_email: string;
+  mobile_secondary: string;
   contact_person: string;
   contact_designation: string;
   contact_email: string;
@@ -40,12 +58,12 @@ type EditableFields = {
 };
 
 const emptyEditable: EditableFields = {
-  headquarters_location: '',
   gcc_locations: '',
   size: '',
-  website: '',
   linkedin: '',
   description: '',
+  additional_email: '',
+  mobile_secondary: '',
   contact_person: '',
   contact_designation: '',
   contact_email: '',
@@ -54,6 +72,7 @@ const emptyEditable: EditableFields = {
 
 export default function GccProfile() {
   const [profile, setProfile] = useState<Partial<GccProfile>>(emptyProfile);
+  const [standardDraft, setStandardDraft] = useState<StandardDraft>(emptyStandardDraft);
   const [editable, setEditable] = useState<EditableFields>(emptyEditable);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -67,13 +86,21 @@ export default function GccProfile() {
       .then((p) => {
         const full = { ...emptyProfile, ...p };
         setProfile(full);
-        setEditable({
+        setStandardDraft({
+          company_name: full.company_name || '',
+          parent_company: full.parent_company || '',
+          year_established: full.year_established != null ? String(full.year_established) : '',
+          industry: full.industry || '',
           headquarters_location: full.headquarters_location || '',
+          website: full.website || '',
+        });
+        setEditable({
           gcc_locations: full.gcc_locations || '',
           size: full.size || '',
-          website: full.website || '',
           linkedin: full.linkedin || '',
           description: full.description || '',
+          additional_email: full.additional_email || '',
+          mobile_secondary: full.mobile_secondary || '',
           contact_person: full.contact_person || '',
           contact_designation: full.contact_designation || '',
           contact_email: full.contact_email || '',
@@ -101,28 +128,43 @@ export default function GccProfile() {
 
     try {
       const payload: Partial<GccProfile> = {
-        headquarters_location: editable.headquarters_location || undefined,
+        company_name: (profile.company_name || standardDraft.company_name) || undefined,
+        parent_company: (profile.parent_company || standardDraft.parent_company) || undefined,
+        year_established: (profile.year_established != null ? profile.year_established : (standardDraft.year_established ? parseInt(standardDraft.year_established, 10) : undefined)) as number | undefined,
+        industry: (profile.industry || standardDraft.industry) || undefined,
+        headquarters_location: (profile.headquarters_location || standardDraft.headquarters_location) || undefined,
+        website: (profile.website || standardDraft.website) || undefined,
         gcc_locations: editable.gcc_locations || undefined,
         size: editable.size || undefined,
-        website: editable.website || undefined,
         linkedin: editable.linkedin || undefined,
         description: editable.description || undefined,
+        additional_email: editable.additional_email || undefined,
+        mobile_secondary: editable.mobile_secondary || undefined,
         contact_person: editable.contact_person || undefined,
         contact_designation: editable.contact_designation || undefined,
         contact_email: editable.contact_email || undefined,
         phone: editable.phone || undefined,
       };
+      if (payload.year_established !== undefined && Number.isNaN(payload.year_established)) delete payload.year_established;
 
       const updated = await gccApi.updateProfile(payload);
       const full = { ...profile, ...updated };
       setProfile(full);
-      setEditable({
+      setStandardDraft({
+        company_name: full.company_name || '',
+        parent_company: full.parent_company || '',
+        year_established: full.year_established != null ? String(full.year_established) : '',
+        industry: full.industry || '',
         headquarters_location: full.headquarters_location || '',
+        website: full.website || '',
+      });
+      setEditable({
         gcc_locations: full.gcc_locations || '',
         size: full.size || '',
-        website: full.website || '',
         linkedin: full.linkedin || '',
         description: full.description || '',
+        additional_email: full.additional_email || '',
+        mobile_secondary: full.mobile_secondary || '',
         contact_person: full.contact_person || '',
         contact_designation: full.contact_designation || '',
         contact_email: full.contact_email || '',
@@ -139,13 +181,21 @@ export default function GccProfile() {
 
   const handleCancel = () => {
     const full = profile;
-    setEditable({
+    setStandardDraft({
+      company_name: full.company_name || '',
+      parent_company: full.parent_company || '',
+      year_established: full.year_established != null ? String(full.year_established) : '',
+      industry: full.industry || '',
       headquarters_location: full.headquarters_location || '',
+      website: full.website || '',
+    });
+    setEditable({
       gcc_locations: full.gcc_locations || '',
       size: full.size || '',
-      website: full.website || '',
       linkedin: full.linkedin || '',
       description: full.description || '',
+      additional_email: full.additional_email || '',
+      mobile_secondary: full.mobile_secondary || '',
       contact_person: full.contact_person || '',
       contact_designation: full.contact_designation || '',
       contact_email: full.contact_email || '',
@@ -165,122 +215,116 @@ export default function GccProfile() {
           <p className="text-muted-foreground">Manage your organization&apos;s profile information.</p>
         </div>
 
-        {/* Standard information - platform-managed (not from registration) */}
+        {/* Standard information – only empty details can be edited */}
         <div className="page-card p-6 space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold">Standard information</h2>
-              <p className="text-xs text-muted-foreground">
-                Managed by platform. Set during onboarding. Contact support to request changes.
-              </p>
-            </div>
-            <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground border border-dashed border-muted-foreground/40 rounded-full px-3 py-1">
-              Read-only
-            </span>
+          <div>
+            <h2 className="text-lg font-semibold">Standard information</h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Filled during signup or onboarding. Empty fields can be edited below and saved with &quot;Save changes&quot; in Operational section.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label className="text-xs font-medium text-muted-foreground">GCC Name</Label>
-              <Input
-                value={profile.company_name || ''}
-                readOnly
-                placeholder="—"
-                className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
-              />
+              {profile.company_name ? (
+                <Input value={profile.company_name} readOnly className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground" />
+              ) : (
+                <Input
+                  value={standardDraft.company_name}
+                  onChange={(e) => setStandardDraft((s) => ({ ...s, company_name: e.target.value }))}
+                  placeholder="Your GCC / company name"
+                  className="mt-1"
+                />
+              )}
             </div>
             <div>
               <Label className="text-xs font-medium text-muted-foreground">Parent Company</Label>
-              <Input
-                value={profile.parent_company || ''}
-                readOnly
-                placeholder="—"
-                className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
-              />
+              {profile.parent_company ? (
+                <Input value={profile.parent_company} readOnly className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground" />
+              ) : (
+                <Input
+                  value={standardDraft.parent_company}
+                  onChange={(e) => setStandardDraft((s) => ({ ...s, parent_company: e.target.value }))}
+                  placeholder="Parent organization name"
+                  className="mt-1"
+                />
+              )}
             </div>
             <div>
               <Label className="text-xs font-medium text-muted-foreground">Year Established</Label>
-              <Input
-                value={profile.year_established != null ? String(profile.year_established) : ''}
-                readOnly
-                placeholder="—"
-                className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
-              />
+              {profile.year_established != null && profile.year_established !== '' ? (
+                <Input value={String(profile.year_established)} readOnly className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground" />
+              ) : (
+                <Input
+                  type="number"
+                  min={1900}
+                  max={2100}
+                  value={standardDraft.year_established}
+                  onChange={(e) => setStandardDraft((s) => ({ ...s, year_established: e.target.value }))}
+                  placeholder="e.g. 2015"
+                  className="mt-1"
+                />
+              )}
             </div>
             <div>
               <Label className="text-xs font-medium text-muted-foreground">Industry Domain</Label>
-              <Input
-                value={profile.industry || ''}
-                readOnly
-                placeholder="—"
-                className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
-              />
+              {profile.industry ? (
+                <Input value={profile.industry} readOnly className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground" />
+              ) : (
+                <select
+                  value={standardDraft.industry}
+                  onChange={(e) => setStandardDraft((s) => ({ ...s, industry: e.target.value }))}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
+                >
+                  <option value="">Select...</option>
+                  {INDUSTRY_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+            <div>
+              <Label className="text-xs font-medium text-muted-foreground">Headquarters Location</Label>
+              {profile.headquarters_location ? (
+                <Input value={profile.headquarters_location} readOnly className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground" />
+              ) : (
+                <Input
+                  value={standardDraft.headquarters_location}
+                  onChange={(e) => setStandardDraft((s) => ({ ...s, headquarters_location: e.target.value }))}
+                  placeholder="City, Country"
+                  className="mt-1"
+                />
+              )}
+            </div>
+            <div>
+              <Label className="text-xs font-medium text-muted-foreground">Official Website</Label>
+              {profile.website ? (
+                <Input type="url" value={profile.website} readOnly className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground" />
+              ) : (
+                <Input
+                  type="url"
+                  value={standardDraft.website}
+                  onChange={(e) => setStandardDraft((s) => ({ ...s, website: e.target.value }))}
+                  placeholder="https://www.example.com"
+                  className="mt-1"
+                />
+              )}
             </div>
           </div>
 
-          {/* Registration details – same fields and labels as Create account (signup) */}
+          {/* Registration details – only GSTN and Mobile from signup */}
           <div className="mt-4 pt-4 border-t border-border/60">
             <h3 className="text-sm font-semibold mb-3">Registration details (managed by platform)</h3>
-            <p className="text-xs text-muted-foreground mb-3">
-              Values provided during account creation. Labels match the registration form.
-            </p>
+            <p className="text-xs text-muted-foreground mb-3">Email (login) and the following were provided during account creation.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label className="text-xs font-medium text-muted-foreground">Company GSTN</Label>
-                <Input
-                  value={profile.gst_number || ''}
-                  readOnly
-                  placeholder="e.g. 27AABCU9603R1ZM"
-                  className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
-                />
+                <Input value={profile.gst_number || ''} readOnly placeholder="e.g. 27AABCU9603R1ZM" className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground" />
               </div>
               <div>
-                <Label className="text-xs font-medium text-muted-foreground">Additional email (optional)</Label>
-                <Input
-                  type="email"
-                  value={profile.additional_email || ''}
-                  readOnly
-                  placeholder="another@company.com"
-                  className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
-                />
-              </div>
-              <div>
-                <Label className="text-xs font-medium text-muted-foreground">Mobile 1</Label>
-                <Input
-                  value={profile.mobile_primary || ''}
-                  readOnly
-                  placeholder="+91 98765 43210"
-                  className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
-                />
-              </div>
-              <div>
-                <Label className="text-xs font-medium text-muted-foreground">Mobile 2 (optional)</Label>
-                <Input
-                  value={profile.mobile_secondary || ''}
-                  readOnly
-                  placeholder="Optional"
-                  className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <Label className="text-xs font-medium text-muted-foreground">Company website</Label>
-                <Input
-                  type="url"
-                  value={profile.website || ''}
-                  readOnly
-                  placeholder="https://www.example.com"
-                  className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <Label className="text-xs font-medium text-muted-foreground">Short description</Label>
-                <Textarea
-                  value={profile.description || ''}
-                  readOnly
-                  rows={3}
-                  placeholder="Brief description of your company or organization..."
-                  className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground resize-none"
-                />
+                <Label className="text-xs font-medium text-muted-foreground">Mobile</Label>
+                <Input value={profile.mobile_primary || ''} readOnly placeholder="+91 98765 43210" className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground" />
               </div>
             </div>
           </div>
@@ -316,16 +360,6 @@ export default function GccProfile() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="headquarters_location">Headquarters Location</Label>
-              <Input
-                id="headquarters_location"
-                value={editable.headquarters_location}
-                onChange={(e) => setEditable((p) => ({ ...p, headquarters_location: e.target.value }))}
-                readOnly={!editMode}
-                className={!editMode ? 'bg-muted/40 border-border/60' : ''}
-              />
-            </div>
-            <div>
               <Label htmlFor="gcc_locations">GCC Location(s)</Label>
               <Input
                 id="gcc_locations"
@@ -336,9 +370,6 @@ export default function GccProfile() {
                 className={!editMode ? 'bg-muted/40 border-border/60' : ''}
               />
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="size">Company Size (GCC Team Size)</Label>
               <Input
@@ -350,14 +381,29 @@ export default function GccProfile() {
                 className={!editMode ? 'bg-muted/40 border-border/60' : ''}
               />
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="website">Official Website</Label>
+              <Label htmlFor="additional_email">Additional email (optional)</Label>
               <Input
-                id="website"
-                type="url"
-                value={editable.website}
-                onChange={(e) => setEditable((p) => ({ ...p, website: e.target.value }))}
-                placeholder="https://example.com"
+                id="additional_email"
+                type="email"
+                value={editable.additional_email}
+                onChange={(e) => setEditable((p) => ({ ...p, additional_email: e.target.value }))}
+                placeholder="another@company.com"
+                readOnly={!editMode}
+                className={!editMode ? 'bg-muted/40 border-border/60' : ''}
+              />
+            </div>
+            <div>
+              <Label htmlFor="mobile_secondary">Mobile 2 (optional)</Label>
+              <Input
+                id="mobile_secondary"
+                type="tel"
+                value={editable.mobile_secondary}
+                onChange={(e) => setEditable((p) => ({ ...p, mobile_secondary: e.target.value }))}
+                placeholder="Optional"
                 readOnly={!editMode}
                 className={!editMode ? 'bg-muted/40 border-border/60' : ''}
               />

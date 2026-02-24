@@ -24,6 +24,10 @@ export default function RegisterForm() {
   const [mobilePrimary, setMobilePrimary] = useState('');
   const [mobileSecondary, setMobileSecondary] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [parentCompany, setParentCompany] = useState('');
+  const [yearEstablished, setYearEstablished] = useState('');
+  const [industry, setIndustry] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -61,9 +65,13 @@ export default function RegisterForm() {
         company_website: companyWebsite.trim() || undefined,
         description: description.trim(),
         gst_number: gstNumber.trim() || undefined,
-        additional_email: additionalEmail.trim() || undefined,
+        additional_email: role === 'STARTUP' ? additionalEmail.trim() || undefined : undefined,
         mobile_primary: mobilePrimary.trim() || undefined,
-        mobile_secondary: mobileSecondary.trim() || undefined,
+        mobile_secondary: role === 'STARTUP' ? mobileSecondary.trim() || undefined : undefined,
+        company_name: role === 'GCC' ? companyName.trim() || undefined : undefined,
+        parent_company: role === 'GCC' ? parentCompany.trim() || undefined : undefined,
+        year_established: role === 'GCC' && yearEstablished.trim() ? parseInt(yearEstablished, 10) : undefined,
+        industry: role === 'GCC' ? industry.trim() || undefined : undefined,
       });
       setSuccess(true);
       setTimeout(() => navigate('/login'), 2000);
@@ -119,17 +127,55 @@ export default function RegisterForm() {
               <Label htmlFor="email">Email (login) *</Label>
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="rounded-lg" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="additional_email">Additional email (optional)</Label>
-              <Input
-                id="additional_email"
-                type="email"
-                placeholder="another@company.com"
-                value={additionalEmail}
-                onChange={(e) => setAdditionalEmail(e.target.value)}
-                className="rounded-lg"
-              />
-            </div>
+            {role === 'STARTUP' && (
+              <div className="space-y-2">
+                <Label htmlFor="additional_email">Additional email (optional)</Label>
+                <Input
+                  id="additional_email"
+                  type="email"
+                  placeholder="another@company.com"
+                  value={additionalEmail}
+                  onChange={(e) => setAdditionalEmail(e.target.value)}
+                  className="rounded-lg"
+                />
+              </div>
+            )}
+            {role === 'GCC' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="company_name">GCC Name *</Label>
+                  <Input id="company_name" value={companyName} onChange={(e) => setCompanyName(e.target.value)} required className="rounded-lg" placeholder="Your GCC / company name" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="parent_company">Parent Company</Label>
+                  <Input id="parent_company" value={parentCompany} onChange={(e) => setParentCompany(e.target.value)} className="rounded-lg" placeholder="Parent organization name" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="year_established">Year Established</Label>
+                  <Input id="year_established" type="number" min={1900} max={2100} value={yearEstablished} onChange={(e) => setYearEstablished(e.target.value)} className="rounded-lg" placeholder="e.g. 2015" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="industry">Industry Domain</Label>
+                  <select
+                    id="industry"
+                    value={industry}
+                    onChange={(e) => setIndustry(e.target.value)}
+                    className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Select...</option>
+                    <option value="FinTech">FinTech</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Automotive">Automotive</option>
+                    <option value="Retail">Retail</option>
+                    <option value="AI">AI</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Logistics">Logistics</option>
+                    <option value="EdTech">EdTech</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </>
+            )}
             <div className="space-y-2">
               <Label htmlFor="password">Password (min 6 characters)</Label>
               <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required className="rounded-lg" />
@@ -149,20 +195,20 @@ export default function RegisterForm() {
                 className="rounded-lg"
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="mobile_primary">{role === 'GCC' ? 'Mobile' : 'Mobile 1'}</Label>
+              <Input
+                id="mobile_primary"
+                type="tel"
+                placeholder="+91 98765 43210"
+                value={mobilePrimary}
+                onChange={(e) => setMobilePrimary(e.target.value)}
+                className="rounded-lg"
+              />
+            </div>
+            {role === 'STARTUP' && (
               <div className="space-y-2">
-                <Label htmlFor="mobile_primary">Mobile 1</Label>
-                <Input
-                  id="mobile_primary"
-                  type="tel"
-                  placeholder="+91 98765 43210"
-                  value={mobilePrimary}
-                  onChange={(e) => setMobilePrimary(e.target.value)}
-                  className="rounded-lg"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="mobile_secondary">Mobile 2</Label>
+                <Label htmlFor="mobile_secondary">Mobile 2 (optional)</Label>
                 <Input
                   id="mobile_secondary"
                   type="tel"
@@ -172,7 +218,7 @@ export default function RegisterForm() {
                   className="rounded-lg"
                 />
               </div>
-            </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="company_website">Company website</Label>
               <Input

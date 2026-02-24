@@ -82,9 +82,6 @@ export default function GccRequirements() {
                   <Link to={`/gcc/requirements/${r.id}`}>
                     <Button variant="outline" size="sm">View</Button>
                   </Link>
-                  <Link to={`/gcc/requirements/${r.id}/edit`}>
-                    <Button variant="ghost" size="sm">Edit</Button>
-                  </Link>
                 </div>
               </div>
             ))}

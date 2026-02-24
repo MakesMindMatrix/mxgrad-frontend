@@ -51,6 +51,10 @@ export const authApi = {
     additional_email?: string;
     mobile_primary?: string;
     mobile_secondary?: string;
+    company_name?: string;
+    parent_company?: string;
+    year_established?: number;
+    industry?: string;
   }) =>
     api<{ user: User; message: string }>('/auth/register', { method: 'POST', body: JSON.stringify(body) }),
   login: (email: string, password: string) =>

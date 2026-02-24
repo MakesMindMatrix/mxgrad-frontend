@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import AppLayout from '@/components/AppLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -14,7 +14,6 @@ import GccDashboard from '@/pages/gcc/GccDashboard';
 import GccRequirements from '@/pages/gcc/GccRequirements';
 import GccRequirementNew from '@/pages/gcc/GccRequirementNew';
 import GccRequirementDetail from '@/pages/gcc/GccRequirementDetail';
-import GccRequirementEdit from '@/pages/gcc/GccRequirementEdit';
 import GccInterests from '@/pages/gcc/GccInterests';
 import GccInterestDetail from '@/pages/gcc/GccInterestDetail';
 import GccDeals from '@/pages/gcc/GccDeals';
@@ -40,6 +39,11 @@ function DashboardRoute({ children, allowedRoles, requireAdmin }: { children: Re
   );
 }
 
+function RedirectRequirementEditToView() {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={id ? `/gcc/requirements/${id}` : '/gcc/requirements'} replace />;
+}
+
 export default function App() {
   return (
     <div className="h-screen overflow-hidden flex flex-col">
@@ -58,7 +62,7 @@ export default function App() {
         <Route path="/gcc/requirements" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirements /></DashboardRoute>} />
         <Route path="/gcc/requirements/new" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirementNew /></DashboardRoute>} />
         <Route path="/gcc/requirements/:id" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirementDetail /></DashboardRoute>} />
-        <Route path="/gcc/requirements/:id/edit" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirementEdit /></DashboardRoute>} />
+        <Route path="/gcc/requirements/:id/edit" element={<DashboardRoute allowedRoles={['GCC']}><RedirectRequirementEditToView /></DashboardRoute>} />
         <Route path="/gcc/interests" element={<DashboardRoute allowedRoles={['GCC']}><GccInterests /></DashboardRoute>} />
         <Route path="/gcc/interests/:id" element={<DashboardRoute allowedRoles={['GCC']}><GccInterestDetail /></DashboardRoute>} />
         <Route path="/gcc/deals" element={<DashboardRoute allowedRoles={['GCC']}><GccDeals /></DashboardRoute>} />
