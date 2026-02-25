@@ -12,6 +12,7 @@ type Interest = {
   startup_name: string;
   startup_company?: string;
   interest_status: string;
+  gcc_response?: string | null;
   created_at: string;
 };
 
@@ -48,6 +49,7 @@ export default function GccInterestDetail() {
   const [error, setError] = useState('');
   const [confirmAction, setConfirmAction] = useState<'accept' | 'reject' | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState('');
 
   useEffect(() => {
     if (!id) return;
@@ -117,19 +119,24 @@ export default function GccInterestDetail() {
   const proposal =
     requirement.applications?.find((app) => app.startup_name === interest.startup_name) ||
     requirement.applications?.[0];
-  const eoiId = proposal?.id ?? interest.id;
-  const alreadyAccepted = proposal?.gcc_response === 'ACCEPTED';
+  const eoiId = interest.id;
+  const alreadyAccepted = interest.gcc_response === 'ACCEPTED' || proposal?.gcc_response === 'ACCEPTED';
   const alreadyRejected = proposal?.status === 'REJECTED';
   const canRespond = eoiId && !alreadyAccepted && !alreadyRejected;
 
   const handleAccept = async () => {
     if (!eoiId) return;
     setActionLoading(true);
+    setActionError('');
     try {
       await gccApi.acceptInterest(eoiId);
       setConfirmAction(null);
+      setInterest((prev) => (prev ? { ...prev, gcc_response: 'ACCEPTED' } : null));
       const req = await gccApi.getRequirement(interest!.requirement_id);
       setRequirement(req as RequirementWithApps);
+    } catch (err: unknown) {
+      const msg = err && typeof err === 'object' && 'message' in err ? String((err as { message: string }).message) : 'Accept failed. Try again or run the DB migration for gcc_response.';
+      setActionError(msg);
     } finally {
       setActionLoading(false);
     }
@@ -138,10 +145,14 @@ export default function GccInterestDetail() {
   const handleReject = async () => {
     if (!eoiId) return;
     setActionLoading(true);
+    setActionError('');
     try {
       await gccApi.rejectInterest(eoiId);
       setConfirmAction(null);
       navigate('/gcc/interests');
+    } catch (err: unknown) {
+      const msg = err && typeof err === 'object' && 'message' in err ? String((err as { message: string }).message) : 'Reject failed. Try again.';
+      setActionError(msg);
     } finally {
       setActionLoading(false);
     }
@@ -158,6 +169,11 @@ export default function GccInterestDetail() {
           Back to received interests
         </Link>
 
+        {actionError && (
+          <div className="rounded-lg bg-destructive/10 text-destructive text-sm p-3 border border-destructive/20">
+            {actionError}
+          </div>
+        )}
         <div className="page-card p-6">
           <h1 className="text-2xl font-bold mb-1">
             Proposal from {interest.startup_company || interest.startup_name}
@@ -191,16 +207,16 @@ export default function GccInterestDetail() {
                 </a>
               )}
               <p className="text-xs text-muted-foreground mt-2">
-                Status: {proposal.status}
-                {proposal.gcc_response && ` · GCC ${proposal.gcc_response === 'ACCEPTED' ? 'accepted' : 'rejected'}`}
+                Admin approved
+                {interest.gcc_response === 'ACCEPTED' ? ' · You accepted' : interest.gcc_response === 'REJECTED' ? ' · You rejected' : ' · Pending your response'}
                 {' · '}Submitted {new Date(proposal.created_at).toLocaleString()}
               </p>
               {canRespond && (
                 <div className="flex gap-2 mt-4">
-                  <Button size="sm" className="gap-1 text-green-600 bg-green-500/20 hover:bg-green-500/30" onClick={() => setConfirmAction('accept')} disabled={actionLoading}>
+                  <Button size="sm" className="gap-1 text-green-600 bg-green-500/20 hover:bg-green-500/30" onClick={() => { setActionError(''); setConfirmAction('accept'); }} disabled={actionLoading}>
                     <Check className="h-4 w-4" /> Accept proposal
                   </Button>
-                  <Button size="sm" variant="outline" className="gap-1 text-destructive" onClick={() => setConfirmAction('reject')} disabled={actionLoading}>
+                  <Button size="sm" variant="outline" className="gap-1 text-destructive" onClick={() => { setActionError(''); setConfirmAction('reject'); }} disabled={actionLoading}>
                     <X className="h-4 w-4" /> Reject proposal
                   </Button>
                 </div>

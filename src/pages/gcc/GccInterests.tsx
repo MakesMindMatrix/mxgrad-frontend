@@ -10,6 +10,7 @@ type Interest = {
   startup_name: string;
   startup_company?: string;
   interest_status: string;
+  gcc_response?: string | null;
   created_at: string;
 };
 
@@ -41,7 +42,7 @@ export default function GccInterests() {
                   <p className="font-medium text-foreground">{i.startup_company || i.startup_name}</p>
                   <p className="text-sm text-muted-foreground">{i.requirement_title}</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {i.interest_status} · {new Date(i.created_at).toLocaleString()}
+                    {i.gcc_response === 'ACCEPTED' ? 'Accepted by you' : 'Pending your response'} · {new Date(i.created_at).toLocaleString()}
                   </p>
                 </div>
                 <Link to={`/gcc/interests/${i.id}`}>
