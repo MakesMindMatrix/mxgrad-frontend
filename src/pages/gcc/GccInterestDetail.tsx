@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { gccApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ArrowLeft, Check, X } from 'lucide-react';
 
 type Interest = {
   id: string;
@@ -26,6 +27,7 @@ type RequirementWithApps = {
   admin_remarks_at?: string | null;
   anonymous_id?: string;
   applications?: {
+    id: string;
     startup_name: string;
     startup_email: string;
     message?: string;
@@ -33,15 +35,19 @@ type RequirementWithApps = {
     created_at: string;
     attachment_path?: string;
     attachment_original_name?: string;
+    gcc_response?: string | null;
   }[];
 };
 
 export default function GccInterestDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [interest, setInterest] = useState<Interest | null>(null);
   const [requirement, setRequirement] = useState<RequirementWithApps | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [confirmAction, setConfirmAction] = useState<'accept' | 'reject' | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -111,6 +117,35 @@ export default function GccInterestDetail() {
   const proposal =
     requirement.applications?.find((app) => app.startup_name === interest.startup_name) ||
     requirement.applications?.[0];
+  const eoiId = proposal?.id ?? interest.id;
+  const alreadyAccepted = proposal?.gcc_response === 'ACCEPTED';
+  const alreadyRejected = proposal?.status === 'REJECTED';
+  const canRespond = eoiId && !alreadyAccepted && !alreadyRejected;
+
+  const handleAccept = async () => {
+    if (!eoiId) return;
+    setActionLoading(true);
+    try {
+      await gccApi.acceptInterest(eoiId);
+      setConfirmAction(null);
+      const req = await gccApi.getRequirement(interest!.requirement_id);
+      setRequirement(req as RequirementWithApps);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!eoiId) return;
+    setActionLoading(true);
+    try {
+      await gccApi.rejectInterest(eoiId);
+      setConfirmAction(null);
+      navigate('/gcc/interests');
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen pt-6 pb-16">
@@ -156,8 +191,20 @@ export default function GccInterestDetail() {
                 </a>
               )}
               <p className="text-xs text-muted-foreground mt-2">
-                Status: {proposal.status} · Submitted {new Date(proposal.created_at).toLocaleString()}
+                Status: {proposal.status}
+                {proposal.gcc_response && ` · GCC ${proposal.gcc_response === 'ACCEPTED' ? 'accepted' : 'rejected'}`}
+                {' · '}Submitted {new Date(proposal.created_at).toLocaleString()}
               </p>
+              {canRespond && (
+                <div className="flex gap-2 mt-4">
+                  <Button size="sm" className="gap-1 text-green-600 bg-green-500/20 hover:bg-green-500/30" onClick={() => setConfirmAction('accept')} disabled={actionLoading}>
+                    <Check className="h-4 w-4" /> Accept proposal
+                  </Button>
+                  <Button size="sm" variant="outline" className="gap-1 text-destructive" onClick={() => setConfirmAction('reject')} disabled={actionLoading}>
+                    <X className="h-4 w-4" /> Reject proposal
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">
@@ -200,6 +247,30 @@ export default function GccInterestDetail() {
           </div>
         </div>
       </div>
+
+      {confirmAction === 'accept' && (
+        <ConfirmDialog
+          open
+          onClose={() => setConfirmAction(null)}
+          title="Accept this proposal?"
+          message="Are you sure you want to accept this proposal from the startup? They will be able to see that you accepted."
+          confirmLabel="Yes, accept"
+          cancelLabel="No"
+          onConfirm={handleAccept}
+        />
+      )}
+      {confirmAction === 'reject' && (
+        <ConfirmDialog
+          open
+          onClose={() => setConfirmAction(null)}
+          title="Reject this proposal?"
+          message="Are you sure you want to reject this proposal? The startup will no longer see it as an active opportunity."
+          confirmLabel="Yes, reject"
+          cancelLabel="No"
+          variant="destructive"
+          onConfirm={handleReject}
+        />
+      )}
     </div>
   );
 }

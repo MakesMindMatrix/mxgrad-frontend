@@ -240,6 +240,10 @@ export const gccApi = {
   getRequirement: (id: string) => api<Requirement & { applications?: unknown[] }>(`/gcc/requirements/${id}`),
   updateRequirement: (id: string, body: Partial<Requirement>) => api<Requirement>(`/gcc/requirements/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
   deleteRequirement: (id: string) => api<void>(`/gcc/requirements/${id}`, { method: 'DELETE' }),
+  acceptInterest: (eoiId: string) =>
+    api<{ id: string; gcc_response: string; gcc_responded_at: string }>(`/gcc/interests/${eoiId}/accept`, { method: 'POST' }),
+  rejectInterest: (eoiId: string) =>
+    api<{ id: string; status: string }>(`/gcc/interests/${eoiId}/reject`, { method: 'POST' }),
 };
 
 // Startup

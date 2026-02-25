@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select } from '@/components/ui/select';
-import { ArrowLeft, Eye, Pencil } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ArrowLeft, Eye, Pencil, Check, X } from 'lucide-react';
 
 const CATEGORIES = ['AI', 'DevOps', 'Cloud', 'Data', 'Security', 'Blockchain', 'IoT'];
 const PRIORITIES = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
@@ -33,8 +34,19 @@ type FormState = {
   skills: string;
 };
 
+interface AppItem {
+  id?: string;
+  startup_name: string;
+  startup_email: string;
+  message?: string;
+  status: string;
+  created_at: string;
+  attachment_path?: string;
+  attachment_original_name?: string;
+  gcc_response?: string | null;
+}
 interface RequirementWithApps extends Requirement {
-  applications?: { startup_name: string; startup_email: string; message?: string; status: string; created_at: string }[];
+  applications?: AppItem[];
 }
 
 function reqToForm(r: RequirementWithApps): FormState {
@@ -65,6 +77,7 @@ export default function GccRequirementDetail() {
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
+  const [confirmEoi, setConfirmEoi] = useState<{ action: 'accept' | 'reject'; eoiId: string } | null>(null);
   const successMessage = location.state && typeof location.state === 'object' && 'message' in location.state ? (location.state as { message?: string }).message : undefined;
 
   useEffect(() => {
@@ -336,34 +349,75 @@ export default function GccRequirementDetail() {
         <h2 className="font-semibold mb-4">Applications / Expressions of interest</h2>
         {req.applications && req.applications.length > 0 ? (
           <div className="space-y-4">
-            {req.applications.map((app: { id?: string; startup_name: string; startup_email: string; message?: string; status: string; created_at: string; attachment_path?: string; attachment_original_name?: string }) => (
-              <div key={app.id ?? `${app.startup_email}-${app.created_at}`} className="page-card p-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-medium">{app.startup_name}</p>
-                    <p className="text-sm text-muted-foreground">{app.startup_email}</p>
-                    {app.message && <p className="text-sm mt-2">{app.message}</p>}
-                    {app.attachment_path && (
-                      <a
-                        href={`${import.meta.env.VITE_API_URL || '/api'}/uploads/${app.attachment_path}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-primary hover:underline mt-2 inline-block"
-                      >
-                        📎 {app.attachment_original_name || 'Download attachment'}
-                      </a>
-                    )}
-                    <p className="text-xs text-muted-foreground mt-2">{new Date(app.created_at).toLocaleString()}</p>
+            {req.applications.map((app) => {
+              const canRespond = app.id && app.gcc_response !== 'ACCEPTED';
+              return (
+                <div key={app.id ?? `${app.startup_email}-${app.created_at}`} className="page-card p-4">
+                  <div className="flex justify-between items-start gap-4">
+                    <div>
+                      <p className="font-medium">{app.startup_name}</p>
+                      <p className="text-sm text-muted-foreground">{app.startup_email}</p>
+                      {app.message && <p className="text-sm mt-2">{app.message}</p>}
+                      {app.attachment_path && (
+                        <a
+                          href={`${import.meta.env.VITE_API_URL || '/api'}/uploads/${app.attachment_path}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline mt-2 inline-block"
+                        >
+                          📎 {app.attachment_original_name || 'Download attachment'}
+                        </a>
+                      )}
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {new Date(app.created_at).toLocaleString()}
+                        {app.gcc_response && ` · GCC ${app.gcc_response === 'ACCEPTED' ? 'accepted' : 'rejected'}`}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="chip chip-default">{app.status}</span>
+                      {canRespond && (
+                        <>
+                          <Button size="sm" className="gap-1 text-green-600 bg-green-500/20 hover:bg-green-500/30" onClick={() => setConfirmEoi({ action: 'accept', eoiId: app.id! })}>
+                            <Check className="h-4 w-4" /> Accept
+                          </Button>
+                          <Button size="sm" variant="outline" className="gap-1 text-destructive" onClick={() => setConfirmEoi({ action: 'reject', eoiId: app.id! })}>
+                            <X className="h-4 w-4" /> Reject
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <span className="chip chip-default">{app.status}</span>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <p className="text-muted-foreground text-sm">No applications yet.</p>
         )}
       </div>
+
+      {confirmEoi && (
+        <ConfirmDialog
+          open
+          onClose={() => setConfirmEoi(null)}
+          title={confirmEoi.action === 'accept' ? 'Accept this proposal?' : 'Reject this proposal?'}
+          message={
+            confirmEoi.action === 'accept'
+              ? 'Are you sure you want to accept this proposal from the startup?'
+              : 'Are you sure you want to reject this proposal? The startup will no longer see it as an active opportunity.'
+          }
+          confirmLabel={confirmEoi.action === 'accept' ? 'Yes, accept' : 'Yes, reject'}
+          cancelLabel="No"
+          variant={confirmEoi.action === 'reject' ? 'destructive' : 'default'}
+          onConfirm={async () => {
+            if (confirmEoi.action === 'accept') await gccApi.acceptInterest(confirmEoi.eoiId);
+            else await gccApi.rejectInterest(confirmEoi.eoiId);
+            setConfirmEoi(null);
+            const updated = await gccApi.getRequirement(id!);
+            setReq(updated as RequirementWithApps);
+          }}
+        />
+      )}
     </div>
   );
 }
