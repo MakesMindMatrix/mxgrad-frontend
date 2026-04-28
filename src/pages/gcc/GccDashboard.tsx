@@ -7,7 +7,7 @@ import { FileText, Plus, ArrowRight } from 'lucide-react';
 
 export default function GccDashboard() {
   const { user } = useAuth();
-  const [requirements, setRequirements] = useState<{ id: string; title: string; interest_count?: number }[]>([]);
+  const [requirements, setRequirements] = useState<{ id: string; title: string; interest_count?: number | string }[]>([]);
 
   useEffect(() => {
     gccApi.getRequirements().then(setRequirements).catch(() => setRequirements([]));

@@ -40,9 +40,9 @@ interface AppItem {
   startup_email: string;
   message?: string;
   status: string;
-  created_at: string;
-  attachment_path?: string;
-  attachment_original_name?: string;
+  created_at?: string;
+  attachment_path?: string | null;
+  attachment_original_name?: string | null;
   gcc_response?: string | null;
 }
 interface RequirementWithApps extends Requirement {
@@ -91,7 +91,7 @@ export default function GccRequirementDetail() {
     gccApi
       .getRequirement(id)
       .then((r) => {
-        setReq(r);
+        setReq(r as RequirementWithApps);
         setLoadError('');
       })
       .catch(() => {
@@ -369,7 +369,7 @@ export default function GccRequirementDetail() {
                         </a>
                       )}
                       <p className="text-xs text-muted-foreground mt-2">
-                        {new Date(app.created_at).toLocaleString()}
+                        {app.created_at ? new Date(app.created_at).toLocaleString() : 'Unknown submission time'}
                         {app.gcc_response && ` · GCC ${app.gcc_response === 'ACCEPTED' ? 'accepted' : 'rejected'}`}
                       </p>
                     </div>

@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { Users, Building2, Rocket, Check, X, Pencil, Trash2, RefreshCw } from 'lucide-react';
+import { Users, Building2, Rocket, Check, X, Pencil, Trash2, RefreshCw, BriefcaseBusiness } from 'lucide-react';
 
-type RoleFilter = 'ALL' | 'GCC' | 'STARTUP';
+type RoleFilter = 'ALL' | 'GCC' | 'STARTUP' | 'INCUBATION';
 
 function profileKeyToLabel(key: string): string {
   return key
@@ -180,6 +180,15 @@ export default function AdminUsers() {
               <Rocket className="h-4 w-4" />
               Startups
             </Button>
+            <Button
+              variant={filter === 'INCUBATION' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setFilter('INCUBATION')}
+              className="gap-1.5"
+            >
+              <BriefcaseBusiness className="h-4 w-4" />
+              Incubation
+            </Button>
           </div>
         </div>
 
@@ -209,7 +218,7 @@ export default function AdminUsers() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium">{u.name}</span>
-                    <span className={`chip ${u.role === 'GCC' ? 'chip-default' : 'chip-ai'}`}>{u.role}</span>
+                    <span className={`chip ${u.role === 'GCC' ? 'chip-default' : u.role === 'INCUBATION' ? 'chip-cloud' : 'chip-ai'}`}>{u.role}</span>
                     {status === 'APPROVED' && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/15 text-green-700 border border-green-200">
                         <Check className="h-3 w-3" /> Approved
@@ -313,7 +322,7 @@ export default function AdminUsers() {
                     <Label>Email</Label>
                     <Input type="email" value={editForm.email} onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))} />
                   </div>
-                  {(detail.user.role === 'GCC' || detail.user.role === 'STARTUP') && (
+                  {(detail.user.role === 'GCC' || detail.user.role === 'STARTUP' || detail.user.role === 'INCUBATION') && (
                     <div className="border-t border-border pt-4 space-y-2">
                       <Label>Company / profile</Label>
                       <div className="grid gap-2">
@@ -334,7 +343,7 @@ export default function AdminUsers() {
                             onChange={(e) => setEditForm((f) => ({ ...f, profile: { ...f.profile, solution_description: e.target.value } }))}
                           />
                         )}
-                        {detail.user.role === 'GCC' && (
+                        {(detail.user.role === 'GCC' || detail.user.role === 'INCUBATION') && (
                           <Input
                             placeholder="Description"
                             value={String(editForm.profile?.description ?? '')}

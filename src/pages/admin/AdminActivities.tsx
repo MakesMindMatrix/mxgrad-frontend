@@ -1,29 +1,9 @@
 import { useEffect, useState } from 'react';
-import { adminApi } from '@/lib/api';
+import { adminApi, type AdminActivityInterest, type AdminActivityRequirement } from '@/lib/api';
 import { FileText, Send, Calendar } from 'lucide-react';
 
-interface ActivityReq {
-  id: string;
-  title: string;
-  category: string;
-  status: string;
-  created_at: string;
-  gcc_name: string;
-  gcc_email: string;
-}
-
-interface ActivityEoi {
-  id: string;
-  message: string;
-  status: string;
-  created_at: string;
-  requirement_title: string;
-  startup_name: string;
-  startup_email: string;
-}
-
 export default function AdminActivities() {
-  const [data, setData] = useState<{ requirements: ActivityReq[]; expressionsOfInterest: ActivityEoi[] } | null>(null);
+  const [data, setData] = useState<{ requirements: AdminActivityRequirement[]; expressionsOfInterest: AdminActivityInterest[] } | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'requirements' | 'interests'>('requirements');
 
@@ -40,7 +20,7 @@ export default function AdminActivities() {
       <div className="container mx-auto px-4">
         <h1 className="text-2xl font-bold mb-2">User Activities</h1>
         <p className="text-muted-foreground text-sm mb-6">
-          Recent requirements posted by GCCs and expressions of interest from startups.
+          Recent requirements posted by GCCs and expressions of interest from startups, including those managed by incubation centers.
         </p>
 
         <div className="flex gap-2 mb-6 border-b border-border pb-2">

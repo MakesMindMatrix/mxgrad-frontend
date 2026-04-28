@@ -1,23 +1,12 @@
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
-import { authApi, ApiError, User } from './api';
+import { authApi, ApiError, type ApprovalStatus, type RegisterPayload, type User } from './api';
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<User | null>;
-  register: (data: {
-    name: string;
-    email: string;
-    password: string;
-    role: 'GCC' | 'STARTUP';
-    company_website?: string;
-    description: string;
-    gst_number?: string;
-    additional_email?: string;
-    mobile_primary?: string;
-    mobile_secondary?: string;
-  }) => Promise<void>;
+  register: (data: RegisterPayload) => Promise<User>;
   logout: () => void;
   isAuthenticated: boolean;
   isApproved: boolean;
@@ -25,6 +14,19 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+function normalizeApprovalStatus(value: unknown): ApprovalStatus {
+  return value === 'PENDING' || value === 'REJECTED' ? value : 'APPROVED';
+}
+
+function normalizeUser(user: User): User {
+  const approvalStatus = normalizeApprovalStatus(user.approvalStatus ?? user.approval_status);
+  return {
+    ...user,
+    approvalStatus,
+    approval_status: approvalStatus,
+  };
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -41,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     try {
       const me = await authApi.me();
-      const normalized = { ...me, approvalStatus: me.approvalStatus ?? (me as unknown as { approval_status?: string }).approval_status ?? 'APPROVED' };
+      const normalized = normalizeUser(me);
       setUser(normalized);
       setPendingApprovalUser(null);
     } catch {
@@ -65,34 +67,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string): Promise<User | null> => {
     try {
       const res = await authApi.login(email, password);
-      const user = res.user;
-      // Ensure approvalStatus is set (backend may send approval_status)
-      const normalized = { ...user, approvalStatus: user.approvalStatus ?? (user as unknown as { approval_status?: string }).approval_status ?? 'APPROVED' };
+      const normalized = normalizeUser(res.user);
       setToken(res.token);
       setUser(normalized);
       setPendingApprovalUser(null);
       return normalized;
     } catch (err) {
       if (err instanceof ApiError && err.code === 'PENDING_APPROVAL' && err.data?.user) {
-        setPendingApprovalUser(err.data.user as User);
+        setPendingApprovalUser(normalizeUser(err.data.user as User));
       }
       throw err;
     }
   }, []);
 
-  const register = useCallback(async (data: {
-    name: string;
-    email: string;
-    password: string;
-    role: 'GCC' | 'STARTUP';
-    company_website?: string;
-    description: string;
-    gst_number?: string;
-    additional_email?: string;
-    mobile_primary?: string;
-    mobile_secondary?: string;
-  }) => {
-    await authApi.register(data);
+  const register = useCallback(async (data: RegisterPayload) => {
+    const res = await authApi.register(data);
+    const pendingUser = normalizeUser(res.user);
+    setPendingApprovalUser(pendingUser);
+    return pendingUser;
   }, []);
 
   const logout = useCallback(() => {

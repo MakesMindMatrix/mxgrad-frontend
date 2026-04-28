@@ -30,7 +30,7 @@ export default function AdminDashboard() {
                 <Users className="h-8 w-8 text-primary" />
                 <span className="text-2xl font-bold">{stats.totalUsers}</span>
               </div>
-              <p className="text-sm text-muted-foreground">Total users (GCC + Startup)</p>
+              <p className="text-sm text-muted-foreground">Total users (GCC + Startup + Incubation)</p>
             </div>
             <div className="page-card p-5">
               <div className="flex items-center gap-3 mb-2">
@@ -62,14 +62,14 @@ export default function AdminDashboard() {
               <span className="font-medium">Pending Approvals</span>
               <ArrowRight className="h-4 w-4 text-muted-foreground" />
             </div>
-            <p className="text-sm text-muted-foreground mt-1">Approve or reject new GCC and Startup registrations.</p>
+            <p className="text-sm text-muted-foreground mt-1">Approve or reject new GCC, Startup, and Incubation Center registrations.</p>
           </Link>
           <Link to="/admin/users" className="page-card p-5 block hover:border-primary/50 transition">
             <div className="flex items-center justify-between">
               <span className="font-medium">All Users</span>
               <ArrowRight className="h-4 w-4 text-muted-foreground" />
             </div>
-            <p className="text-sm text-muted-foreground mt-1">View all users and status. Filter by GCC or Startup.</p>
+            <p className="text-sm text-muted-foreground mt-1">View all users and status. Filter by GCC, Startup, or Incubation Center.</p>
           </Link>
           <Link to="/admin/activities" className="page-card p-5 block hover:border-primary/50 transition">
             <div className="flex items-center justify-between">

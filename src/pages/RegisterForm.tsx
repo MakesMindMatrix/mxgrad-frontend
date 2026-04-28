@@ -7,12 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AuthPageBackground from '@/components/AuthPageBackground';
 
-type Role = 'GCC' | 'STARTUP';
+type Role = 'GCC' | 'STARTUP' | 'INCUBATION';
 
 export default function RegisterForm() {
   const [searchParams, setSearchParams] = useSearchParams();
   const roleParam = searchParams.get('role') as Role | null;
-  const [role, setRole] = useState<Role>(roleParam === 'GCC' || roleParam === 'STARTUP' ? roleParam : 'GCC');
+  const [role, setRole] = useState<Role>(roleParam === 'GCC' || roleParam === 'STARTUP' || roleParam === 'INCUBATION' ? roleParam : 'GCC');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +35,7 @@ export default function RegisterForm() {
 
   // Sync role from URL and redirect if invalid
   useEffect(() => {
-    if (roleParam === 'GCC' || roleParam === 'STARTUP') {
+    if (roleParam === 'GCC' || roleParam === 'STARTUP' || roleParam === 'INCUBATION') {
       setRole(roleParam);
     } else {
       navigate('/register', { replace: true });
@@ -64,16 +64,16 @@ export default function RegisterForm() {
         company_website: companyWebsite.trim() || undefined,
         description: description.trim(),
         gst_number: gstNumber.trim() || undefined,
-        additional_email: role === 'STARTUP' ? additionalEmail.trim() || undefined : undefined,
+        additional_email: role !== 'GCC' ? additionalEmail.trim() || undefined : undefined,
         mobile_primary: mobilePrimary.trim() || undefined,
-        mobile_secondary: role === 'STARTUP' ? mobileSecondary.trim() || undefined : undefined,
+        mobile_secondary: role !== 'GCC' ? mobileSecondary.trim() || undefined : undefined,
         company_name: companyName.trim() || undefined,
         parent_company: role === 'GCC' ? parentCompany.trim() || undefined : undefined,
         year_established: role === 'GCC' && yearEstablished.trim() ? parseInt(yearEstablished, 10) : undefined,
         industry: role === 'GCC' ? industry.trim() || undefined : undefined,
       });
       setSuccess(true);
-      setTimeout(() => navigate('/login'), 2000);
+      setTimeout(() => navigate('/pending-approval', { replace: true }), 1200);
     } catch (err: unknown) {
       setError(err && typeof err === 'object' && 'message' in err ? String((err as { message: string }).message) : 'Registration failed');
     } finally {
@@ -81,7 +81,7 @@ export default function RegisterForm() {
     }
   };
 
-  if (roleParam !== 'GCC' && roleParam !== 'STARTUP') {
+  if (roleParam !== 'GCC' && roleParam !== 'STARTUP' && roleParam !== 'INCUBATION') {
     return null; // redirecting in useEffect
   }
 
@@ -94,7 +94,7 @@ export default function RegisterForm() {
           <p className="text-muted-foreground text-sm">
             Your account is pending admin approval. You'll be able to log in once an administrator approves your registration.
           </p>
-          <p className="text-sm text-muted-foreground mt-4">Redirecting to login...</p>
+          <p className="text-sm text-muted-foreground mt-4">Redirecting to approval status...</p>
         </div>
       </div>
     );
@@ -106,34 +106,58 @@ export default function RegisterForm() {
       <div className="w-full max-w-lg relative z-0">
         <div className="page-card p-8 shadow-xl">
           <h1 className="text-xl font-bold text-foreground mb-2">Create account</h1>
-          <p className="text-sm text-muted-foreground mb-6 text-center">
-            {role === 'GCC' ? (
-              <>Not a GCC Entity? <button type="button" onClick={() => handleSwitchEntity('STARTUP')} className="text-primary hover:underline font-medium">Go to Startup Entity</button></>
-            ) : (
-              <>Not a Startup Entity? <button type="button" onClick={() => handleSwitchEntity('GCC')} className="text-primary hover:underline font-medium">Go to GCC Entity</button></>
-            )}
-          </p>
+          <div className="grid grid-cols-1 gap-2 mb-6">
+            <button
+              type="button"
+              onClick={() => handleSwitchEntity('GCC')}
+              className={`rounded-lg border px-3 py-2 text-sm text-left transition ${role === 'GCC' ? 'border-primary bg-primary/5 text-foreground' : 'border-border text-muted-foreground hover:border-primary/50'}`}
+            >
+              GCC Entity
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSwitchEntity('STARTUP')}
+              className={`rounded-lg border px-3 py-2 text-sm text-left transition ${role === 'STARTUP' ? 'border-primary bg-primary/5 text-foreground' : 'border-border text-muted-foreground hover:border-primary/50'}`}
+            >
+              Startup Entity
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSwitchEntity('INCUBATION')}
+              className={`rounded-lg border px-3 py-2 text-sm text-left transition ${role === 'INCUBATION' ? 'border-primary bg-primary/5 text-foreground' : 'border-border text-muted-foreground hover:border-primary/50'}`}
+            >
+              Incubation Center
+            </button>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
               <div className="rounded-lg bg-destructive/10 text-destructive text-sm p-3 border border-destructive/20">{error}</div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="entity_name">{role === 'GCC' ? 'GCC Name *' : 'Entity name *'}</Label>
+              <Label htmlFor="entity_name">
+                {role === 'GCC' ? 'GCC Name *' : role === 'INCUBATION' ? 'Incubation center name *' : 'Entity name *'}
+              </Label>
               <Input
                 id="entity_name"
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 required
                 className="rounded-lg"
-                placeholder={role === 'GCC' ? 'Your GCC / company name' : 'Your startup or entity name'}
+                placeholder={
+                  role === 'GCC'
+                    ? 'Your GCC / company name'
+                    : role === 'INCUBATION'
+                      ? 'Your incubation center name'
+                      : 'Your startup or entity name'
+                }
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email (login) *</Label>
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="rounded-lg" />
             </div>
-            {role === 'STARTUP' && (
+            {role !== 'GCC' && (
               <div className="space-y-2">
                 <Label htmlFor="additional_email">Additional email (optional)</Label>
                 <Input
@@ -198,7 +222,7 @@ export default function RegisterForm() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="mobile_primary">{role === 'GCC' ? 'Mobile' : 'Mobile 1'}</Label>
+              <Label htmlFor="mobile_primary">{role === 'GCC' ? 'Mobile' : 'Primary mobile'}</Label>
               <Input
                 id="mobile_primary"
                 type="tel"
@@ -208,9 +232,9 @@ export default function RegisterForm() {
                 className="rounded-lg"
               />
             </div>
-            {role === 'STARTUP' && (
+            {role !== 'GCC' && (
               <div className="space-y-2">
-                <Label htmlFor="mobile_secondary">Mobile 2 (optional)</Label>
+                <Label htmlFor="mobile_secondary">Secondary mobile (optional)</Label>
                 <Input
                   id="mobile_secondary"
                   type="tel"

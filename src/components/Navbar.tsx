@@ -92,6 +92,8 @@ export default function Navbar() {
                   ? '/admin/dashboard'
                   : user.role === 'GCC'
                     ? '/gcc/dashboard'
+                    : user.role === 'INCUBATION'
+                      ? '/incubation/dashboard'
                     : '/startup/dashboard'
                 : '/'
             }
@@ -126,9 +128,15 @@ export default function Navbar() {
           {isAuthenticated ? (
             <>
               {user?.role === 'ADMIN' && <AdminNotifications />}
-              {(user?.role === 'GCC' || user?.role === 'STARTUP') && (
+              {(user?.role === 'GCC' || user?.role === 'STARTUP' || user?.role === 'INCUBATION') && (
                 <Link
-                  to={user.role === 'GCC' ? '/gcc/notifications' : '/startup/notifications'}
+                  to={
+                    user.role === 'GCC'
+                      ? '/gcc/notifications'
+                      : user.role === 'INCUBATION'
+                        ? '/incubation/notifications'
+                        : '/startup/notifications'
+                  }
                   className="p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition"
                   title="Notifications"
                 >

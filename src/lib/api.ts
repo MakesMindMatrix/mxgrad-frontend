@@ -40,24 +40,28 @@ export class ApiError extends Error {
   }
 }
 
+export type ApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export interface RegisterPayload {
+  name: string;
+  email: string;
+  password: string;
+  role: 'GCC' | 'STARTUP' | 'INCUBATION';
+  company_website?: string;
+  description: string;
+  gst_number?: string;
+  additional_email?: string;
+  mobile_primary?: string;
+  mobile_secondary?: string;
+  company_name?: string;
+  parent_company?: string;
+  year_established?: number;
+  industry?: string;
+}
+
 // Auth
 export const authApi = {
-  register: (body: {
-    name: string;
-    email: string;
-    password: string;
-    role: 'GCC' | 'STARTUP';
-    company_website?: string;
-    description: string;
-    gst_number?: string;
-    additional_email?: string;
-    mobile_primary?: string;
-    mobile_secondary?: string;
-    company_name?: string;
-    parent_company?: string;
-    year_established?: number;
-    industry?: string;
-  }) =>
+  register: (body: RegisterPayload) =>
     api<{ user: User; message: string }>('/auth/register', { method: 'POST', body: JSON.stringify(body) }),
   login: (email: string, password: string) =>
     api<{ token: string; user: User; expiresIn: string }>('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
@@ -93,11 +97,31 @@ export interface EoiApprovalItem {
   startup_email: string;
 }
 
+export interface AdminActivityRequirement {
+  id: string;
+  title: string;
+  category: string;
+  status: string;
+  created_at: string;
+  gcc_name: string;
+  gcc_email: string;
+}
+
+export interface AdminActivityInterest {
+  id: string;
+  message: string;
+  status: string;
+  created_at: string;
+  requirement_title: string;
+  startup_name: string;
+  startup_email: string;
+}
+
 export const adminApi = {
   getPendingApprovals: () => api<User[]>('/admin/approvals'),
   approve: (userId: string) => api<User>(`/admin/approvals/${userId}/approve`, { method: 'POST' }),
   reject: (userId: string) => api<User>(`/admin/approvals/${userId}/reject`, { method: 'POST' }),
-  getUsers: (role?: 'GCC' | 'STARTUP') => api<User[]>(`/admin/users${role ? `?role=${role}` : ''}`),
+  getUsers: (role?: 'GCC' | 'STARTUP' | 'INCUBATION') => api<User[]>(`/admin/users${role ? `?role=${role}` : ''}`),
   getUser: (userId: string) =>
     api<{ user: User; profile: Record<string, unknown> | null }>(`/admin/users/${userId}`),
   updateUser: (userId: string, data: { name?: string; email?: string; profile?: Record<string, unknown> }) =>
@@ -114,7 +138,8 @@ export const adminApi = {
       openRequirements: number;
       pendingInterests: number;
     }>('/admin/stats'),
-  getActivities: () => api<{ requirements: unknown[]; expressionsOfInterest: unknown[] }>('/admin/activities'),
+  getActivities: () =>
+    api<{ requirements: AdminActivityRequirement[]; expressionsOfInterest: AdminActivityInterest[] }>('/admin/activities'),
   getActiveProjects: () => api<unknown[]>('/admin/active-projects'),
   getPendingRequirementApprovals: () =>
     api<RequirementApprovalItem[]>('/admin/requirement-approvals'),
@@ -222,6 +247,11 @@ export interface StartupListItem {
   primary_offering_type?: string;
 }
 
+export interface RequirementApplication extends ExpressionOfInterest {
+  startup_name: string;
+  startup_email: string;
+}
+
 export const gccApi = {
   getProfile: () => api<GccProfile | null>('/gcc/profile'),
   updateProfile: (body: Partial<GccProfile>) => api<GccProfile>('/gcc/profile', { method: 'PUT', body: JSON.stringify(body) }),
@@ -237,7 +267,7 @@ export const gccApi = {
   getActiveDeals: () =>
     api<{ id: string; title: string; category: string; status: string; updated_at: string; accepted_count: number }[]>('/gcc/active-deals'),
   createRequirement: (body: Partial<Requirement>) => api<Requirement>('/gcc/requirements', { method: 'POST', body: JSON.stringify(body) }),
-  getRequirement: (id: string) => api<Requirement & { applications?: unknown[] }>(`/gcc/requirements/${id}`),
+  getRequirement: (id: string) => api<Requirement & { applications?: RequirementApplication[] }>(`/gcc/requirements/${id}`),
   updateRequirement: (id: string, body: Partial<Requirement>) => api<Requirement>(`/gcc/requirements/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
   deleteRequirement: (id: string) => api<void>(`/gcc/requirements/${id}`, { method: 'DELETE' }),
   acceptInterest: (eoiId: string) =>
@@ -252,6 +282,48 @@ export const startupApi = {
   updateProfile: (body: Partial<StartupProfile>) => api<StartupProfile>('/startup/profile', { method: 'PUT', body: JSON.stringify(body) }),
 };
 
+// Incubation
+export interface IncubationStartupListItem {
+  id: string;
+  name: string;
+  email: string;
+  approval_status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  created_at: string;
+  company_name?: string;
+  website?: string;
+  industry?: string;
+  solution_description?: string;
+  location?: string;
+}
+
+export interface IncubationInterestItem extends ExpressionOfInterest {
+  startup_name: string;
+  startup_company?: string;
+}
+
+export const incubationApi = {
+  getProfile: () => api<IncubationProfile | null>('/incubation/profile'),
+  updateProfile: (body: Partial<IncubationProfile>) => api<IncubationProfile>('/incubation/profile', { method: 'PUT', body: JSON.stringify(body) }),
+  listStartups: (params?: { approval_status?: 'PENDING' | 'APPROVED' | 'REJECTED' }) => {
+    const q = new URLSearchParams();
+    if (params?.approval_status) q.set('approval_status', params.approval_status);
+    return api<IncubationStartupListItem[]>(`/incubation/startups${q.toString() ? `?${q}` : ''}`);
+  },
+  createStartup: (body: {
+    name: string;
+    email: string;
+    password: string;
+    company_name?: string;
+    company_website?: string;
+    description: string;
+    gst_number?: string;
+    additional_email?: string;
+    mobile_primary?: string;
+    mobile_secondary?: string;
+  }) => api<{ user: User; message: string }>('/incubation/startups', { method: 'POST', body: JSON.stringify(body) }),
+  getInterests: () => api<IncubationInterestItem[]>('/incubation/interests'),
+};
+
 // Requirements (public + express interest)
 export const requirementsApi = {
   list: (params?: { category?: string; search?: string }) => {
@@ -261,7 +333,7 @@ export const requirementsApi = {
   get: (id: string) => api<Requirement>(`/requirements/${id}`),
   expressInterest: (
     id: string,
-    body: { message?: string; proposed_budget?: number; proposed_timeline_start?: string; proposed_timeline_end?: string; portfolio_link?: string },
+    body: { message?: string; proposed_budget?: number; proposed_timeline_start?: string; proposed_timeline_end?: string; portfolio_link?: string; startup_user_id?: string },
     document?: File
   ) => {
     const form = new FormData();
@@ -270,6 +342,7 @@ export const requirementsApi = {
     if (body.proposed_timeline_start) form.append('proposed_timeline_start', body.proposed_timeline_start);
     if (body.proposed_timeline_end) form.append('proposed_timeline_end', body.proposed_timeline_end);
     if (body.portfolio_link) form.append('portfolio_link', body.portfolio_link);
+    if (body.startup_user_id) form.append('startup_user_id', body.startup_user_id);
     if (document) form.append('document', document);
     const token = getToken();
     const headers: Record<string, string> = {};
@@ -277,7 +350,7 @@ export const requirementsApi = {
     return fetch(`${API_BASE}/requirements/${id}/express-interest`, { method: 'POST', body: form, headers }).then(async (res) => {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new ApiError(res.status, (data as { message?: string }).message || 'Request failed');
-      return data as unknown;
+      return data as ExpressionOfInterest;
     });
   },
   myInterests: () => api<ExpressionOfInterest[]>('/requirements/my/interests'),
@@ -287,9 +360,12 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'ADMIN' | 'GCC' | 'STARTUP';
-  approvalStatus?: 'PENDING' | 'APPROVED' | 'REJECTED';
-  approval_status?: string;
+  role: 'ADMIN' | 'GCC' | 'STARTUP' | 'INCUBATION';
+  approvalStatus?: ApprovalStatus;
+  approval_status?: ApprovalStatus;
+  managed_by_user_id?: string | null;
+  managed_by_name?: string | null;
+  managed_by_email?: string | null;
   createdAt?: string;
   created_at?: string;
   updated_at?: string;
@@ -365,6 +441,21 @@ export interface StartupProfile {
   profile_completion_percentage?: number;
 }
 
+export interface IncubationProfile {
+  id: string;
+  user_id: string;
+  company_name?: string;
+  website?: string;
+  description?: string;
+  location?: string;
+  contact_person?: string;
+  phone?: string;
+  gst_number?: string;
+  additional_email?: string;
+  mobile_primary?: string;
+  mobile_secondary?: string;
+}
+
 export type RequirementApprovalStatus = 'PENDING_APPROVAL' | 'APPROVED' | 'SENT_BACK' | 'REJECTED';
 
 export interface Requirement {
@@ -394,12 +485,18 @@ export interface Requirement {
 export interface ExpressionOfInterest {
   id: string;
   requirement_id: string;
+  startup_user_id?: string;
   requirement_title?: string;
   category?: string;
   anonymous_id?: string;
   message?: string;
   status: string;
+  gcc_response?: string | null;
   created_at?: string;
+  updated_at?: string;
+  startup_name?: string;
+  startup_company?: string;
+  startup_email?: string;
   attachment_path?: string | null;
   attachment_original_name?: string | null;
   proposed_budget?: number | null;

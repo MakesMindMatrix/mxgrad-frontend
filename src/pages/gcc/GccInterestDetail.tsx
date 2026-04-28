@@ -257,9 +257,9 @@ export default function GccInterestDetail() {
           <h2 className="text-xl font-semibold">{requirement.title}</h2>
           <p className="text-muted-foreground mt-2 whitespace-pre-wrap">{requirement.description}</p>
           <div className="mt-4">
-            <Button asChild variant="outline" size="sm">
-              <Link to={`/gcc/requirements/${requirement.id}`}>Open full requirement</Link>
-            </Button>
+            <Link to={`/gcc/requirements/${requirement.id}`}>
+              <Button variant="outline" size="sm">Open full requirement</Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -290,4 +290,3 @@ export default function GccInterestDetail() {
     </div>
   );
 }
-

@@ -48,6 +48,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     navItems.push({ to: '/startup/proposal-status', label: 'Proposal Status', icon: ClipboardList });
     navItems.push({ to: '/startup/notifications', label: 'Notifications', icon: Bell });
     navItems.push({ to: '/startup/profile', label: 'Profile', icon: User });
+  } else if (user?.role === 'INCUBATION') {
+    navItems.push({ to: '/incubation/dashboard', label: 'Dashboard', icon: LayoutDashboard });
+    navItems.push({ to: '/incubation/explore', label: 'Explore GCC Requirements', icon: Compass });
+    navItems.push({ to: '/incubation/startups', label: 'Managed Startups', icon: Users });
+    navItems.push({ to: '/incubation/proposals', label: 'Startup Proposals', icon: FilePen });
+    navItems.push({ to: '/incubation/notifications', label: 'Notifications', icon: Bell });
+    navItems.push({ to: '/incubation/profile', label: 'Profile', icon: User });
   } else if (user?.role === 'ADMIN') {
     navItems.push({ to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard });
     navItems.push({ to: '/admin/approvals', label: 'Approvals', icon: Shield });
@@ -77,6 +84,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   ? '/admin/dashboard'
                   : user?.role === 'GCC'
                     ? '/gcc/dashboard'
+                    : user?.role === 'INCUBATION'
+                      ? '/incubation/dashboard'
                     : '/startup/dashboard'
               }
               className="font-bold text-white text-lg truncate"
@@ -96,7 +105,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
         <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
-              const isActive = location.pathname === item.to || (item.to !== '/explore' && item.to !== '/admin/explore' && item.to !== '/gcc/explore' && item.to !== '/startup/explore' && location.pathname.startsWith(item.to));
+              const isActive = location.pathname === item.to || (
+                item.to !== '/explore' &&
+                item.to !== '/admin/explore' &&
+                item.to !== '/gcc/explore' &&
+                item.to !== '/startup/explore' &&
+                item.to !== '/incubation/explore' &&
+                location.pathname.startsWith(item.to)
+              );
               return (
                 <Link
                   key={item.to + item.label}

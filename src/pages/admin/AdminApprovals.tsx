@@ -49,7 +49,7 @@ export default function AdminApprovals() {
             Refresh
           </Button>
         </div>
-        <p className="text-muted-foreground mb-6">Approve or reject new GCC and Startup registrations. Until approved, they cannot log in.</p>
+        <p className="text-muted-foreground mb-6">Approve or reject new GCC, Startup, and Incubation Center registrations. Until approved, they cannot log in.</p>
 
         {loading ? (
           <p className="text-muted-foreground">Loading...</p>
@@ -66,7 +66,7 @@ export default function AdminApprovals() {
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-semibold">{u.name}</span>
-                    <span className={`chip ${u.role === 'GCC' ? 'chip-default' : 'chip-ai'}`}>{u.role}</span>
+                    <span className={`chip ${u.role === 'GCC' ? 'chip-default' : u.role === 'INCUBATION' ? 'chip-cloud' : 'chip-ai'}`}>{u.role}</span>
                   </div>
                   <p className="text-sm text-muted-foreground">{u.email}</p>
                   <p className="text-xs text-muted-foreground mt-1">

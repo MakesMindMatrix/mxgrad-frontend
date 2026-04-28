@@ -4,6 +4,7 @@ import { requirementsApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Paperclip, X } from 'lucide-react';
 
@@ -23,23 +24,40 @@ export interface ExpressInterestInitialValues {
   proposed_budget?: number | null;
 }
 
+interface StartupOption {
+  id: string;
+  name: string;
+  company_name?: string;
+}
+
 interface Props {
   requirement: Requirement | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialValues?: ExpressInterestInitialValues | null;
+  startupOptions?: StartupOption[];
+  initialStartupUserId?: string | null;
 }
 
-export default function ExpressInterestDialog({ requirement, open, onOpenChange, initialValues }: Props) {
+export default function ExpressInterestDialog({
+  requirement,
+  open,
+  onOpenChange,
+  initialValues,
+  startupOptions,
+  initialStartupUserId,
+}: Props) {
   const [message, setMessage] = useState('');
   const [portfolioLink, setPortfolioLink] = useState('');
   const [proposedBudget, setProposedBudget] = useState('');
   const [timelineStart, setTimelineStart] = useState('');
   const [timelineEnd, setTimelineEnd] = useState('');
+  const [selectedStartupId, setSelectedStartupId] = useState('');
   const [attachment, setAttachment] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const requiresStartupSelection = (startupOptions?.length ?? 0) > 0;
 
   useEffect(() => {
     if (open && initialValues) {
@@ -55,7 +73,12 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange,
       setTimelineStart('');
       setTimelineEnd('');
     }
-  }, [open, initialValues]);
+    if (open && requiresStartupSelection) {
+      setSelectedStartupId(initialStartupUserId ?? startupOptions?.[0]?.id ?? '');
+    } else if (open) {
+      setSelectedStartupId('');
+    }
+  }, [open, initialStartupUserId, initialValues, requiresStartupSelection, startupOptions]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -81,6 +104,10 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange,
       setError('Timeline end must be on or after the start date.');
       return;
     }
+    if (requiresStartupSelection && !selectedStartupId) {
+      setError('Select an approved startup before submitting the proposal.');
+      return;
+    }
     setLoading(true);
     try {
       await requirementsApi.expressInterest(
@@ -91,6 +118,7 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange,
           proposed_budget: proposedBudget ? Number(proposedBudget) : undefined,
           proposed_timeline_start: timelineStart || undefined,
           proposed_timeline_end: timelineEnd || undefined,
+          startup_user_id: requiresStartupSelection ? selectedStartupId : undefined,
         },
         attachment ?? undefined
       );
@@ -99,6 +127,7 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange,
       setProposedBudget('');
       setTimelineStart('');
       setTimelineEnd('');
+      setSelectedStartupId(startupOptions?.[0]?.id ?? '');
       setAttachment(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
       onOpenChange(false);
@@ -124,6 +153,26 @@ export default function ExpressInterestDialog({ requirement, open, onOpenChange,
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && <div className="rounded-md bg-destructive/10 text-destructive text-sm p-3">{error}</div>}
+          {requiresStartupSelection && (
+            <div>
+              <Label htmlFor="startup_user_id">Approved startup *</Label>
+              <Select
+                id="startup_user_id"
+                value={selectedStartupId}
+                onChange={(e) => setSelectedStartupId(e.target.value)}
+                required
+              >
+                {startupOptions?.map((startup) => (
+                  <option key={startup.id} value={startup.id}>
+                    {startup.company_name || startup.name}
+                  </option>
+                ))}
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                This proposal will be submitted on behalf of the selected startup.
+              </p>
+            </div>
+          )}
           <div>
             <Label htmlFor="message">Proposal message *</Label>
             <Textarea

@@ -299,7 +299,7 @@ export default function GccProfile() {
             </div>
             <div>
               <Label className="text-xs font-medium text-muted-foreground">Year Established</Label>
-              {profile.year_established != null && profile.year_established !== '' ? (
+              {profile.year_established != null ? (
                 <Input value={String(profile.year_established)} readOnly className="mt-1 bg-muted/40 border-dashed border-border/60 text-foreground" />
               ) : (
                 <Input
@@ -636,4 +636,3 @@ export default function GccProfile() {
     </div>
   );
 }
-

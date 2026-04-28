@@ -25,6 +25,12 @@ import StartupProfile from '@/pages/startup/StartupProfile';
 import StartupNotifications from '@/pages/startup/StartupNotifications';
 import StartupMyProposals from '@/pages/startup/StartupMyProposals';
 import StartupProposalStatus from '@/pages/startup/StartupProposalStatus';
+import IncubationDashboard from '@/pages/incubation/IncubationDashboard';
+import IncubationProfile from '@/pages/incubation/IncubationProfile';
+import IncubationExplore from '@/pages/incubation/IncubationExplore';
+import IncubationStartups from '@/pages/incubation/IncubationStartups';
+import IncubationProposals from '@/pages/incubation/IncubationProposals';
+import IncubationNotifications from '@/pages/incubation/IncubationNotifications';
 import AdminApprovals from '@/pages/admin/AdminApprovals';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminUsers from '@/pages/admin/AdminUsers';
@@ -34,7 +40,7 @@ import AdminRequirementApprovals from '@/pages/admin/AdminRequirementApprovals';
 import AdminEoiApprovals from '@/pages/admin/AdminEoiApprovals';
 import AdminRequirements from '@/pages/admin/AdminRequirements';
 
-function DashboardRoute({ children, allowedRoles, requireAdmin }: { children: React.ReactNode; allowedRoles?: ('ADMIN' | 'GCC' | 'STARTUP')[]; requireAdmin?: boolean }) {
+function DashboardRoute({ children, allowedRoles, requireAdmin }: { children: React.ReactNode; allowedRoles?: ('ADMIN' | 'GCC' | 'STARTUP' | 'INCUBATION')[]; requireAdmin?: boolean }) {
   return (
     <ProtectedRoute allowedRoles={allowedRoles} requireAdmin={requireAdmin}>
       <AppLayout>{children}</AppLayout>
@@ -79,6 +85,13 @@ export default function App() {
         <Route path="/startup/proposal-status" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupProposalStatus /></DashboardRoute>} />
         <Route path="/startup/notifications" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupNotifications /></DashboardRoute>} />
         <Route path="/startup/profile" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupProfile /></DashboardRoute>} />
+
+        <Route path="/incubation/dashboard" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationDashboard /></DashboardRoute>} />
+        <Route path="/incubation/explore" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationExplore /></DashboardRoute>} />
+        <Route path="/incubation/startups" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationStartups /></DashboardRoute>} />
+        <Route path="/incubation/proposals" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationProposals /></DashboardRoute>} />
+        <Route path="/incubation/notifications" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationNotifications /></DashboardRoute>} />
+        <Route path="/incubation/profile" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationProfile /></DashboardRoute>} />
 
         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/admin/dashboard" element={<DashboardRoute requireAdmin><AdminDashboard /></DashboardRoute>} />

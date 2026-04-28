@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/auth-context';
 interface Props {
   children: React.ReactNode;
   requireAdmin?: boolean;
-  allowedRoles?: ('ADMIN' | 'GCC' | 'STARTUP')[];
+  allowedRoles?: ('ADMIN' | 'GCC' | 'STARTUP' | 'INCUBATION')[];
 }
 
 export default function ProtectedRoute({ children, requireAdmin, allowedRoles }: Props) {

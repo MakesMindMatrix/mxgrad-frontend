@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import AuthPageBackground from '@/components/AuthPageBackground';
 
 export default function Register() {
-  const [role, setRole] = useState<'GCC' | 'STARTUP' | null>(null);
+  const [role, setRole] = useState<'GCC' | 'STARTUP' | 'INCUBATION' | null>(null);
   const navigate = useNavigate();
 
   const handleContinue = () => {
@@ -43,6 +43,18 @@ export default function Register() {
             >
               <span className="font-medium text-sm">GCC Entity</span>
               <span className="text-muted-foreground text-xs">Global Capability Centers and corporate innovation units.</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setRole('INCUBATION')}
+              className={`w-full flex items-center justify-between rounded-lg border px-4 py-3 text-left transition-colors ${
+                role === 'INCUBATION'
+                  ? 'border-primary bg-primary/5 text-foreground'
+                  : 'border-border bg-card hover:border-primary/50'
+              }`}
+            >
+              <span className="font-medium text-sm">Incubation Center</span>
+              <span className="text-muted-foreground text-xs">Incubators and accelerators managing multiple startup accounts.</span>
             </button>
           </div>
 

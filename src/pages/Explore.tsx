@@ -26,6 +26,10 @@ export default function Explore() {
       navigate('/startup/explore', { replace: true });
       return;
     }
+    if (user?.role === 'INCUBATION') {
+      navigate('/incubation/explore', { replace: true });
+      return;
+    }
   }, [user?.role, navigate]);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [loading, setLoading] = useState(false);
@@ -59,7 +63,7 @@ export default function Explore() {
   };
 
   // While redirecting (GCC/Startup), show nothing or a loader
-  if (user?.role === 'GCC' || user?.role === 'STARTUP') {
+  if (user?.role === 'GCC' || user?.role === 'STARTUP' || user?.role === 'INCUBATION') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-muted-foreground">Redirecting...</p>
@@ -75,7 +79,7 @@ export default function Explore() {
           <p className="text-muted-foreground">
             {isAdminView
               ? 'Browse tech requirements from GCCs. Status and interest counts are shown.'
-              : 'Browse tech requirements from GCCs. Log in as a startup to express interest.'}
+              : 'Browse tech requirements from GCCs. Log in as a startup or incubation center to express interest.'}
           </p>
         </div>
 

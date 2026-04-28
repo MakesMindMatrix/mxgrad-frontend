@@ -21,6 +21,7 @@ export default function Login() {
       if (user.role === 'ADMIN') navigate('/admin/dashboard', { replace: true });
       else if (user.role === 'GCC') navigate('/gcc/dashboard', { replace: true });
       else if (user.role === 'STARTUP') navigate('/startup/dashboard', { replace: true });
+      else if (user.role === 'INCUBATION') navigate('/incubation/dashboard', { replace: true });
       else navigate('/', { replace: true });
     }
   }, [isAuthenticated, user, authLoading, navigate]);
@@ -45,6 +46,8 @@ export default function Login() {
         navigate('/gcc/dashboard', { replace: true });
       } else if (user?.role === 'STARTUP') {
         navigate('/startup/dashboard', { replace: true });
+      } else if (user?.role === 'INCUBATION') {
+        navigate('/incubation/dashboard', { replace: true });
       } else {
         navigate('/', { replace: true });
       }
