@@ -91,7 +91,7 @@ export default function IncubationProposals() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className="text-xs font-mono text-muted-foreground">{eoi.anonymous_id || eoi.requirement_id?.slice(0, 8)}</span>
-                    <span className="chip chip-default">{eoi.category || 'â€”'}</span>
+                    <span className="chip chip-default">{eoi.category || '-'}</span>
                     <span className="chip text-xs bg-muted text-muted-foreground">{eoi.status}</span>
                     {eoi.gcc_response === 'ACCEPTED' && (
                       <span className="chip bg-green-500/15 text-green-700">GCC accepted</span>
@@ -155,16 +155,16 @@ export default function IncubationProposals() {
               <div className="p-4 space-y-4">
                 <div className="flex flex-wrap gap-2">
                   <span className="text-xs font-mono text-muted-foreground">{viewEoi.anonymous_id || viewEoi.requirement_id?.slice(0, 8)}</span>
-                  <span className="chip chip-default">{viewEoi.category || 'â€”'}</span>
+                  <span className="chip chip-default">{viewEoi.category || '-'}</span>
                   <span className="chip text-xs bg-muted text-muted-foreground">{viewEoi.status}</span>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground">Startup</div>
-                  <div className="font-semibold">{viewEoi.startup_company || viewEoi.startup_name || 'â€”'}</div>
+                  <div className="font-semibold">{viewEoi.startup_company || viewEoi.startup_name || '-'}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground">Requirement</div>
-                  <div className="font-semibold">{viewEoi.requirement_title || 'â€”'}</div>
+                  <div className="font-semibold">{viewEoi.requirement_title || '-'}</div>
                 </div>
                 {viewEoi.message && (
                   <div>
@@ -189,7 +189,7 @@ export default function IncubationProposals() {
                   </div>
                 )}
                 <div className="text-xs text-muted-foreground pt-2 border-t border-border">
-                  Submitted {viewEoi.created_at ? new Date(viewEoi.created_at).toLocaleString() : 'â€”'}
+                  Submitted {viewEoi.created_at ? new Date(viewEoi.created_at).toLocaleString() : '-'}
                 </div>
               </div>
             </div>

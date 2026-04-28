@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { adminApi } from '@/lib/api';
 import type { User } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,10 @@ const ROLE_LABEL: Record<string, string> = {
 function UserCard({ u, onApprove, onReject }: { u: User; onApprove: () => void; onReject: () => void }) {
   const badge = ROLE_BADGE[u.role] ?? 'bg-gray-100 text-gray-700';
   const label = ROLE_LABEL[u.role] ?? u.role;
-  const date = (u.createdAt ?? u.created_at) ? new Date((u.createdAt ?? u.created_at) as string).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+  const date = (u.createdAt ?? u.created_at)
+    ? new Date((u.createdAt ?? u.created_at) as string).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    : '-';
+  const managedStartupCount = Number(u.managed_startup_count ?? 0);
 
   return (
     <div className="page-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:shadow-md transition-shadow">
@@ -44,8 +47,23 @@ function UserCard({ u, onApprove, onReject }: { u: User; onApprove: () => void; 
             <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${badge}`}>
               {label}
             </span>
+            {u.role === 'STARTUP' && u.managed_by_name && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                Incubation tagged
+              </span>
+            )}
           </div>
           <p className="text-sm text-muted-foreground">{u.email}</p>
+          {u.role === 'STARTUP' && u.managed_by_name && (
+            <p className="text-xs text-muted-foreground mt-1">
+              Managed by <span className="text-foreground font-medium">{u.managed_by_name}</span>
+            </p>
+          )}
+          {u.role === 'INCUBATION' && managedStartupCount > 0 && (
+            <p className="text-xs text-muted-foreground mt-1">
+              Managing {managedStartupCount} startup{managedStartupCount === 1 ? '' : 's'}
+            </p>
+          )}
           <p className="text-xs text-muted-foreground mt-1">Registered on {date}</p>
         </div>
       </div>
@@ -90,41 +108,44 @@ export default function AdminApprovals() {
 
   const filtered = useMemo(() => {
     if (activeTab === 'all') return pending;
-    return pending.filter(u => u.role === activeTab);
+    return pending.filter((user) => user.role === activeTab);
   }, [pending, activeTab]);
 
   const counts = useMemo(() => ({
     all: pending.length,
-    GCC: pending.filter(u => u.role === 'GCC').length,
-    STARTUP: pending.filter(u => u.role === 'STARTUP').length,
-    INCUBATION: pending.filter(u => u.role === 'INCUBATION').length,
+    GCC: pending.filter((user) => user.role === 'GCC').length,
+    STARTUP: pending.filter((user) => user.role === 'STARTUP').length,
+    INCUBATION: pending.filter((user) => user.role === 'INCUBATION').length,
   }), [pending]);
 
   const handleApprove = async (userId: string) => {
     try {
       await adminApi.approve(userId);
-      setPending(p => p.filter(u => u.id !== userId));
-    } catch { load(); }
+      setPending((current) => current.filter((user) => user.id !== userId));
+    } catch {
+      load();
+    }
   };
 
   const handleReject = async (userId: string) => {
     try {
       await adminApi.reject(userId);
-      setPending(p => p.filter(u => u.id !== userId));
-    } catch { load(); }
+      setPending((current) => current.filter((user) => user.id !== userId));
+    } catch {
+      load();
+    }
   };
 
-  const activeTabMeta = TABS.find(t => t.key === activeTab)!;
+  const activeTabMeta = TABS.find((tab) => tab.key === activeTab)!;
 
   return (
     <div className="min-h-screen pt-6 pb-16">
       <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Pending Approvals</h1>
             <p className="text-muted-foreground text-sm mt-1">
-              Review and approve new user registrations. All users require admin approval before they can access the platform.
+              Review and approve new users. Startups created under incubation centers are clearly tagged here before approval too.
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={load} disabled={loading} className="gap-2 flex-shrink-0">
@@ -133,9 +154,8 @@ export default function AdminApprovals() {
           </Button>
         </div>
 
-        {/* Tab bar */}
         <div className="flex gap-1 p-1 bg-muted/50 rounded-xl mb-6 overflow-x-auto">
-          {TABS.map(tab => {
+          {TABS.map((tab) => {
             const Icon = tab.icon;
             const count = counts[tab.key];
             const isActive = activeTab === tab.key;
@@ -145,9 +165,7 @@ export default function AdminApprovals() {
                 type="button"
                 onClick={() => setActiveTab(tab.key)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap flex-1 justify-center ${
-                  isActive
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                  isActive ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <Icon className={`h-4 w-4 ${isActive ? tab.color : ''}`} />
@@ -164,11 +182,10 @@ export default function AdminApprovals() {
           })}
         </div>
 
-        {/* Content */}
         {loading ? (
           <div className="space-y-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="page-card p-5 animate-pulse">
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className="page-card p-5 animate-pulse">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-muted" />
                   <div className="flex-1 space-y-2">
@@ -189,12 +206,12 @@ export default function AdminApprovals() {
           </div>
         ) : (
           <div className="space-y-3">
-            {filtered.map(u => (
+            {filtered.map((user) => (
               <UserCard
-                key={u.id}
-                u={u}
-                onApprove={() => setConfirmUser({ action: 'approve', user: u })}
-                onReject={() => setConfirmUser({ action: 'reject', user: u })}
+                key={user.id}
+                u={user}
+                onApprove={() => setConfirmUser({ action: 'approve', user })}
+                onReject={() => setConfirmUser({ action: 'reject', user })}
               />
             ))}
           </div>

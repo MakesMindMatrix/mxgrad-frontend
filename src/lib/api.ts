@@ -124,6 +124,30 @@ export interface AdminActivityInterest {
   requirement_title: string;
   startup_name: string;
   startup_email: string;
+  managed_by_name?: string | null;
+  managed_by_email?: string | null;
+}
+
+export interface AdminManagedStartupItem {
+  id: string;
+  name: string;
+  email: string;
+  role: 'STARTUP';
+  approval_status: ApprovalStatus;
+  created_at: string;
+  updated_at?: string;
+  login_enabled?: boolean;
+  company_name?: string;
+  website?: string;
+  industry?: string;
+  location?: string;
+  solution_description?: string;
+}
+
+export interface AdminUserDetailResponse {
+  user: User;
+  profile: Record<string, unknown> | null;
+  managedStartups?: AdminManagedStartupItem[];
 }
 
 export const adminApi = {
@@ -131,8 +155,7 @@ export const adminApi = {
   approve: (userId: string) => api<User>(`/admin/approvals/${userId}/approve`, { method: 'POST' }),
   reject: (userId: string) => api<User>(`/admin/approvals/${userId}/reject`, { method: 'POST' }),
   getUsers: (role?: 'GCC' | 'STARTUP' | 'INCUBATION') => api<User[]>(`/admin/users${role ? `?role=${role}` : ''}`),
-  getUser: (userId: string) =>
-    api<{ user: User; profile: Record<string, unknown> | null }>(`/admin/users/${userId}`),
+  getUser: (userId: string) => api<AdminUserDetailResponse>(`/admin/users/${userId}`),
   updateUser: (userId: string, data: { name?: string; email?: string; profile?: Record<string, unknown> }) =>
     api<User>(`/admin/users/${userId}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteUser: (userId: string) =>
@@ -305,11 +328,29 @@ export interface IncubationStartupListItem {
   solution_description?: string;
   location?: string;
   pan_number?: string;
+  interest_count?: number | string;
 }
 
 export interface IncubationInterestItem extends ExpressionOfInterest {
   startup_name: string;
   startup_company?: string;
+}
+
+export interface IncubationStartupDetail {
+  user: User & {
+    approval_status?: ApprovalStatus;
+    company_name?: string;
+    website?: string;
+    industry?: string;
+    solution_description?: string;
+    location?: string;
+    pan_number?: string;
+    team_size?: number;
+    primary_offering_type?: string;
+    funding?: string;
+  };
+  profile: StartupProfile | null;
+  interests: ExpressionOfInterest[];
 }
 
 export const incubationApi = {
@@ -338,6 +379,7 @@ export const incubationApi = {
       method: 'PATCH',
       body: JSON.stringify({ enabled }),
     }),
+  getStartup: (startupId: string) => api<IncubationStartupDetail>(`/incubation/startups/${startupId}`),
   getInterests: () => api<IncubationInterestItem[]>('/incubation/interests'),
 };
 
@@ -383,6 +425,8 @@ export interface User {
   managed_by_user_id?: string | null;
   managed_by_name?: string | null;
   managed_by_email?: string | null;
+  managed_startup_count?: number | string;
+  login_enabled?: boolean;
   createdAt?: string;
   created_at?: string;
   updated_at?: string;

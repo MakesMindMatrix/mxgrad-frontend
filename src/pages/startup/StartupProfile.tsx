@@ -65,6 +65,16 @@ export default function StartupProfile() {
           </div>
         )}
 
+        {user?.managed_by_name && (
+          <div className="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
+            <p className="font-medium text-foreground">Managed by incubation center</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              This startup is associated with <span className="text-foreground font-medium">{user.managed_by_name}</span>
+              {user.managed_by_email ? <> ({user.managed_by_email})</> : null}.
+            </p>
+          </div>
+        )}
+
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="flex flex-wrap gap-1 mb-6 bg-muted text-muted-foreground">
             {TABS.map((t) => (
@@ -122,6 +132,10 @@ export default function StartupProfile() {
                 <div>
                   <Label className="text-muted-foreground text-xs">Additional email (optional)</Label>
                   <Input type="email" value={profile.additional_email || ''} readOnly className="bg-muted/50 mt-1" placeholder="another@company.com" />
+                </div>
+                <div>
+                  <Label className="text-muted-foreground text-xs">Incubation center</Label>
+                  <Input value={user?.managed_by_name || 'Independent startup'} readOnly className="bg-muted/50 mt-1" />
                 </div>
                 <div>
                   <Label className="text-muted-foreground text-xs">Mobile 1</Label>

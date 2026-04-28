@@ -35,13 +35,15 @@ export default function IncubationNotifications() {
                   <strong>{interest.startup_company || interest.startup_name}</strong> submitted a proposal for{' '}
                   <strong>{interest.requirement_title || 'Requirement'}</strong>
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">{interest.created_at ? new Date(interest.created_at).toLocaleString() : ''}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {interest.created_at ? new Date(interest.created_at).toLocaleString() : ''}
+                </p>
                 <p className="text-xs text-muted-foreground mt-2">
                   Status: {interest.status}
-                  {interest.gcc_response === 'ACCEPTED' ? ' · GCC accepted' : ''}
+                  {interest.gcc_response === 'ACCEPTED' ? ' | GCC accepted' : ''}
                 </p>
                 <Link to="/incubation/proposals" className="text-sm text-primary hover:underline mt-2 inline-block">
-                  View proposals â†’
+                  View proposals
                 </Link>
               </li>
             ))}

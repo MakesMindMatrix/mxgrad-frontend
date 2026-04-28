@@ -7,6 +7,7 @@ export default function PendingApproval() {
   const { user, logout, pendingApprovalUser } = useAuth();
   const navigate = useNavigate();
   const displayUser = pendingApprovalUser || user;
+  const isManagedStartup = displayUser?.role === 'STARTUP' && !!displayUser.managed_by_name;
 
   const handleLogout = () => {
     logout();
@@ -24,6 +25,16 @@ export default function PendingApproval() {
           Thank you for registering. Your account is pending approval by our admin team. You cannot log in until then.
         </p>
 
+        {isManagedStartup && (
+          <div className="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-left">
+            <p className="font-medium text-foreground">Registered under an incubation center</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              This startup account is associated with <span className="text-foreground font-medium">{displayUser?.managed_by_name}</span>
+              {displayUser?.managed_by_email ? <> ({displayUser.managed_by_email})</> : null}. Admins can see this relationship during approval.
+            </p>
+          </div>
+        )}
+
         {displayUser && (
           <div className="bg-muted/50 rounded-lg p-4 text-left mb-6">
             <div className="grid grid-cols-2 gap-2 text-sm">
@@ -33,6 +44,18 @@ export default function PendingApproval() {
               <span>{displayUser.email}</span>
               <span className="text-muted-foreground">Account type</span>
               <span>{displayUser.role}</span>
+              {isManagedStartup && (
+                <>
+                  <span className="text-muted-foreground">Registration path</span>
+                  <span>Created by incubation center</span>
+                </>
+              )}
+              {displayUser.managed_by_name && (
+                <>
+                  <span className="text-muted-foreground">Incubation center</span>
+                  <span>{displayUser.managed_by_name}</span>
+                </>
+              )}
               <span className="text-muted-foreground">Status</span>
               <span className="text-warning">{displayUser.approvalStatus}</span>
             </div>
@@ -41,8 +64,9 @@ export default function PendingApproval() {
 
         <div className="space-y-2 text-sm text-muted-foreground mb-8">
           <p>1. Our admin team will verify your details.</p>
-          <p>2. Once approved, you can log in and access the portal.</p>
-          <p className="italic">Approval usually takes 24–48 hours.</p>
+          {isManagedStartup && <p>2. Your incubation center link stays attached to this startup after approval.</p>}
+          <p>{isManagedStartup ? '3.' : '2.'} Once approved, you can log in and access the portal.</p>
+          <p className="italic">Approval usually takes 24-48 hours.</p>
         </div>
 
         <div className="flex gap-3 justify-center">

@@ -36,6 +36,16 @@ export default function StartupDashboard() {
           </Link>
         </div>
 
+        {user?.managed_by_name && (
+          <div className="page-card p-5 mb-6 border-amber-500/30 bg-amber-500/10">
+            <h2 className="font-semibold mb-1">Incubation association</h2>
+            <p className="text-sm text-muted-foreground">
+              Your startup is managed by <span className="text-foreground font-medium">{user.managed_by_name}</span>
+              {user.managed_by_email ? <> ({user.managed_by_email})</> : null}.
+            </p>
+          </div>
+        )}
+
         <div className="grid gap-4 md:grid-cols-2">
           <Link to="/startup/profile" className="page-card p-6 block hover:border-blue-400 transition-colors">
             <div className="flex items-center gap-3 mb-2">

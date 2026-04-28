@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { adminApi, type AdminActivityInterest, type AdminActivityRequirement } from '@/lib/api';
-import { FileText, Send, Calendar } from 'lucide-react';
+import { Calendar, FileText, Send } from 'lucide-react';
 
 export default function AdminActivities() {
   const [data, setData] = useState<{ requirements: AdminActivityRequirement[]; expressionsOfInterest: AdminActivityInterest[] } | null>(null);
@@ -51,20 +51,20 @@ export default function AdminActivities() {
             {data.requirements.length === 0 ? (
               <p className="text-muted-foreground">No requirements posted yet.</p>
             ) : (
-              data.requirements.map((r) => (
-                <div key={r.id} className="page-card p-4">
+              data.requirements.map((requirement) => (
+                <div key={requirement.id} className="page-card p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="font-medium">{r.title}</p>
+                      <p className="font-medium">{requirement.title}</p>
                       <p className="text-sm text-muted-foreground">
-                        by {r.gcc_name} ({r.gcc_email})
+                        by {requirement.gcc_name} ({requirement.gcc_email})
                       </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="chip chip-default">{r.category}</span>
-                        <span className="chip chip-default">{r.status}</span>
+                        <span className="chip chip-default">{requirement.category}</span>
+                        <span className="chip chip-default">{requirement.status}</span>
                         <span className="text-xs text-muted-foreground flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {new Date(r.created_at).toLocaleString()}
+                          {new Date(requirement.created_at).toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -80,19 +80,30 @@ export default function AdminActivities() {
             {data.expressionsOfInterest.length === 0 ? (
               <p className="text-muted-foreground">No expressions of interest yet.</p>
             ) : (
-              data.expressionsOfInterest.map((e) => (
-                <div key={e.id} className="page-card p-4">
+              data.expressionsOfInterest.map((interest) => (
+                <div key={interest.id} className="page-card p-4">
                   <div>
-                    <p className="font-medium">Re: {e.requirement_title}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium">Re: {interest.requirement_title}</p>
+                      {interest.managed_by_name && (
+                        <span className="chip bg-amber-500/15 text-amber-700">Incubation tagged</span>
+                      )}
+                    </div>
                     <p className="text-sm text-muted-foreground">
-                      by {e.startup_name} ({e.startup_email})
+                      by {interest.startup_name} ({interest.startup_email})
                     </p>
-                    {e.message && <p className="text-sm mt-2 line-clamp-2">{e.message}</p>}
+                    {interest.managed_by_name && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Submitted through <span className="text-foreground font-medium">{interest.managed_by_name}</span>
+                        {interest.managed_by_email ? <> ({interest.managed_by_email})</> : null}
+                      </p>
+                    )}
+                    {interest.message && <p className="text-sm mt-2 line-clamp-2">{interest.message}</p>}
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="chip chip-default">{e.status}</span>
+                      <span className="chip chip-default">{interest.status}</span>
                       <span className="text-xs text-muted-foreground flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {new Date(e.created_at).toLocaleString()}
+                        {new Date(interest.created_at).toLocaleString()}
                       </span>
                     </div>
                   </div>
