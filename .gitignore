@@ -34,3 +34,7 @@ pnpm-debug.log*
 # Optional: keep public/photos/ in repo but ignore large binaries if needed
 # public/photos/*.jpg
 # public/photos/*.png
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+dist/
