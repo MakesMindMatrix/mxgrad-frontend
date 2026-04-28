@@ -9,6 +9,10 @@ import Register from '@/pages/Register';
 import RegisterForm from '@/pages/RegisterForm';
 import PendingApproval from '@/pages/PendingApproval';
 import Explore from '@/pages/Explore';
+import AdminLogin from '@/pages/AdminLogin';
+import GccLogin from '@/pages/login/GccLogin';
+import StartupLogin from '@/pages/login/StartupLogin';
+import IncubationLogin from '@/pages/login/IncubationLogin';
 import GccExplore from '@/pages/gcc/GccExplore';
 import StartupExplore from '@/pages/startup/StartupExplore';
 import GccDashboard from '@/pages/gcc/GccDashboard';
@@ -59,52 +63,66 @@ export default function App() {
       <Navbar />
       <div className="flex-1 min-h-0 overflow-y-auto">
         <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/contact" element={<ContactUs />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/register/form" element={<RegisterForm />} />
-        <Route path="/pending-approval" element={<PendingApproval />} />
-        <Route path="/explore" element={<Explore />} />
+          {/* Public pages */}
+          <Route path="/" element={<Home />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/pending-approval" element={<PendingApproval />} />
 
-        <Route path="/gcc/dashboard" element={<DashboardRoute allowedRoles={['GCC']}><GccDashboard /></DashboardRoute>} />
-        <Route path="/gcc/explore" element={<DashboardRoute allowedRoles={['GCC']}><GccExplore /></DashboardRoute>} />
-        <Route path="/gcc/requirements" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirements /></DashboardRoute>} />
-        <Route path="/gcc/requirements/new" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirementNew /></DashboardRoute>} />
-        <Route path="/gcc/requirements/:id" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirementDetail /></DashboardRoute>} />
-        <Route path="/gcc/requirements/:id/edit" element={<DashboardRoute allowedRoles={['GCC']}><RedirectRequirementEditToView /></DashboardRoute>} />
-        <Route path="/gcc/interests" element={<DashboardRoute allowedRoles={['GCC']}><GccInterests /></DashboardRoute>} />
-        <Route path="/gcc/interests/:id" element={<DashboardRoute allowedRoles={['GCC']}><GccInterestDetail /></DashboardRoute>} />
-        <Route path="/gcc/deals" element={<DashboardRoute allowedRoles={['GCC']}><GccDeals /></DashboardRoute>} />
-        <Route path="/gcc/notifications" element={<DashboardRoute allowedRoles={['GCC']}><GccNotifications /></DashboardRoute>} />
-        <Route path="/gcc/profile" element={<DashboardRoute allowedRoles={['GCC']}><GccProfile /></DashboardRoute>} />
+          {/* Login portals */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/login/gcc" element={<GccLogin />} />
+          <Route path="/login/startup" element={<StartupLogin />} />
+          <Route path="/login/incubation" element={<IncubationLogin />} />
 
-        <Route path="/startup/dashboard" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupDashboard /></DashboardRoute>} />
-        <Route path="/startup/explore" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupExplore /></DashboardRoute>} />
-        <Route path="/startup/proposals" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupMyProposals /></DashboardRoute>} />
-        <Route path="/startup/proposal-status" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupProposalStatus /></DashboardRoute>} />
-        <Route path="/startup/notifications" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupNotifications /></DashboardRoute>} />
-        <Route path="/startup/profile" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupProfile /></DashboardRoute>} />
+          {/* Registration */}
+          <Route path="/register" element={<Register />} />
+          <Route path="/register/form" element={<RegisterForm />} />
 
-        <Route path="/incubation/dashboard" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationDashboard /></DashboardRoute>} />
-        <Route path="/incubation/explore" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationExplore /></DashboardRoute>} />
-        <Route path="/incubation/startups" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationStartups /></DashboardRoute>} />
-        <Route path="/incubation/proposals" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationProposals /></DashboardRoute>} />
-        <Route path="/incubation/notifications" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationNotifications /></DashboardRoute>} />
-        <Route path="/incubation/profile" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationProfile /></DashboardRoute>} />
+          {/* Hidden admin login — not linked from any public page */}
+          <Route path="/admin" element={<AdminLogin />} />
 
-        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-        <Route path="/admin/dashboard" element={<DashboardRoute requireAdmin><AdminDashboard /></DashboardRoute>} />
-        <Route path="/admin/explore" element={<DashboardRoute requireAdmin><Explore /></DashboardRoute>} />
-        <Route path="/admin/approvals" element={<DashboardRoute requireAdmin><AdminApprovals /></DashboardRoute>} />
-        <Route path="/admin/requirement-approvals" element={<DashboardRoute requireAdmin><AdminRequirementApprovals /></DashboardRoute>} />
-        <Route path="/admin/eoi-approvals" element={<DashboardRoute requireAdmin><AdminEoiApprovals /></DashboardRoute>} />
-        <Route path="/admin/users" element={<DashboardRoute requireAdmin><AdminUsers /></DashboardRoute>} />
-        <Route path="/admin/requirements" element={<DashboardRoute requireAdmin><AdminRequirements /></DashboardRoute>} />
-        <Route path="/admin/activities" element={<DashboardRoute requireAdmin><AdminActivities /></DashboardRoute>} />
-        <Route path="/admin/projects" element={<DashboardRoute requireAdmin><AdminActiveProjects /></DashboardRoute>} />
+          {/* GCC dashboard */}
+          <Route path="/gcc/dashboard" element={<DashboardRoute allowedRoles={['GCC']}><GccDashboard /></DashboardRoute>} />
+          <Route path="/gcc/explore" element={<DashboardRoute allowedRoles={['GCC']}><GccExplore /></DashboardRoute>} />
+          <Route path="/gcc/requirements" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirements /></DashboardRoute>} />
+          <Route path="/gcc/requirements/new" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirementNew /></DashboardRoute>} />
+          <Route path="/gcc/requirements/:id" element={<DashboardRoute allowedRoles={['GCC']}><GccRequirementDetail /></DashboardRoute>} />
+          <Route path="/gcc/requirements/:id/edit" element={<DashboardRoute allowedRoles={['GCC']}><RedirectRequirementEditToView /></DashboardRoute>} />
+          <Route path="/gcc/interests" element={<DashboardRoute allowedRoles={['GCC']}><GccInterests /></DashboardRoute>} />
+          <Route path="/gcc/interests/:id" element={<DashboardRoute allowedRoles={['GCC']}><GccInterestDetail /></DashboardRoute>} />
+          <Route path="/gcc/deals" element={<DashboardRoute allowedRoles={['GCC']}><GccDeals /></DashboardRoute>} />
+          <Route path="/gcc/notifications" element={<DashboardRoute allowedRoles={['GCC']}><GccNotifications /></DashboardRoute>} />
+          <Route path="/gcc/profile" element={<DashboardRoute allowedRoles={['GCC']}><GccProfile /></DashboardRoute>} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Startup dashboard */}
+          <Route path="/startup/dashboard" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupDashboard /></DashboardRoute>} />
+          <Route path="/startup/explore" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupExplore /></DashboardRoute>} />
+          <Route path="/startup/proposals" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupMyProposals /></DashboardRoute>} />
+          <Route path="/startup/proposal-status" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupProposalStatus /></DashboardRoute>} />
+          <Route path="/startup/notifications" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupNotifications /></DashboardRoute>} />
+          <Route path="/startup/profile" element={<DashboardRoute allowedRoles={['STARTUP']}><StartupProfile /></DashboardRoute>} />
+
+          {/* Incubation dashboard */}
+          <Route path="/incubation/dashboard" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationDashboard /></DashboardRoute>} />
+          <Route path="/incubation/explore" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationExplore /></DashboardRoute>} />
+          <Route path="/incubation/startups" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationStartups /></DashboardRoute>} />
+          <Route path="/incubation/proposals" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationProposals /></DashboardRoute>} />
+          <Route path="/incubation/notifications" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationNotifications /></DashboardRoute>} />
+          <Route path="/incubation/profile" element={<DashboardRoute allowedRoles={['INCUBATION']}><IncubationProfile /></DashboardRoute>} />
+
+          {/* Admin dashboard (protected) */}
+          <Route path="/admin/dashboard" element={<DashboardRoute requireAdmin><AdminDashboard /></DashboardRoute>} />
+          <Route path="/admin/explore" element={<DashboardRoute requireAdmin><Explore /></DashboardRoute>} />
+          <Route path="/admin/approvals" element={<DashboardRoute requireAdmin><AdminApprovals /></DashboardRoute>} />
+          <Route path="/admin/requirement-approvals" element={<DashboardRoute requireAdmin><AdminRequirementApprovals /></DashboardRoute>} />
+          <Route path="/admin/eoi-approvals" element={<DashboardRoute requireAdmin><AdminEoiApprovals /></DashboardRoute>} />
+          <Route path="/admin/users" element={<DashboardRoute requireAdmin><AdminUsers /></DashboardRoute>} />
+          <Route path="/admin/requirements" element={<DashboardRoute requireAdmin><AdminRequirements /></DashboardRoute>} />
+          <Route path="/admin/activities" element={<DashboardRoute requireAdmin><AdminActivities /></DashboardRoute>} />
+          <Route path="/admin/projects" element={<DashboardRoute requireAdmin><AdminActiveProjects /></DashboardRoute>} />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </div>

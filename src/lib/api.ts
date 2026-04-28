@@ -47,6 +47,7 @@ export interface RegisterPayload {
   email: string;
   password: string;
   role: 'GCC' | 'STARTUP' | 'INCUBATION';
+  pan_number: string;
   company_website?: string;
   description: string;
   gst_number?: string;
@@ -63,8 +64,16 @@ export interface RegisterPayload {
 export const authApi = {
   register: (body: RegisterPayload) =>
     api<{ user: User; message: string }>('/auth/register', { method: 'POST', body: JSON.stringify(body) }),
-  login: (email: string, password: string) =>
-    api<{ token: string; user: User; expiresIn: string }>('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  login: (email: string, password: string, endpoint = '/auth/login') =>
+    api<{ token: string; user: User; expiresIn: string }>(endpoint, { method: 'POST', body: JSON.stringify({ email, password }) }),
+  loginGcc: (email: string, password: string) =>
+    api<{ token: string; user: User; expiresIn: string }>('/auth/login/gcc', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  loginStartup: (email: string, password: string) =>
+    api<{ token: string; user: User; expiresIn: string }>('/auth/login/startup', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  loginIncubation: (email: string, password: string) =>
+    api<{ token: string; user: User; expiresIn: string }>('/auth/login/incubation', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  loginAdmin: (email: string, password: string) =>
+    api<{ token: string; user: User; expiresIn: string }>('/auth/login/admin', { method: 'POST', body: JSON.stringify({ email, password }) }),
   me: () => api<User>('/auth/me'),
 };
 
@@ -288,12 +297,14 @@ export interface IncubationStartupListItem {
   name: string;
   email: string;
   approval_status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  login_enabled: boolean;
   created_at: string;
   company_name?: string;
   website?: string;
   industry?: string;
   solution_description?: string;
   location?: string;
+  pan_number?: string;
 }
 
 export interface IncubationInterestItem extends ExpressionOfInterest {
@@ -313,6 +324,7 @@ export const incubationApi = {
     name: string;
     email: string;
     password: string;
+    pan_number: string;
     company_name?: string;
     company_website?: string;
     description: string;
@@ -321,6 +333,11 @@ export const incubationApi = {
     mobile_primary?: string;
     mobile_secondary?: string;
   }) => api<{ user: User; message: string }>('/incubation/startups', { method: 'POST', body: JSON.stringify(body) }),
+  toggleStartupLogin: (startupId: string, enabled: boolean) =>
+    api<{ id: string; login_enabled: boolean }>(`/incubation/startups/${startupId}/login-access`, {
+      method: 'PATCH',
+      body: JSON.stringify({ enabled }),
+    }),
   getInterests: () => api<IncubationInterestItem[]>('/incubation/interests'),
 };
 

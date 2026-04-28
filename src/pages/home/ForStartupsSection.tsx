@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const BULLETS = [
-  'Showcase Capabilities',
-  'Access Enterprise Opportunities',
-  'Secure Long-Term Contracts',
+  'Build a detailed profile showcasing your team, product, and technology stack',
+  'Browse approved GCC requirements filtered by category, industry, and budget',
+  'Submit proposals with portfolio links, timelines, and supporting documents',
+  'Track proposal status and manage your enterprise engagements in real-time',
 ];
 
 export default function ForStartupsSection() {
@@ -34,11 +35,12 @@ export default function ForStartupsSection() {
             transition={{ duration: 0.6 }}
             className="order-1 lg:order-2"
           >
+            <p className="text-home-accent text-xs font-semibold tracking-widest uppercase mb-3">For Startups</p>
             <h2 className="text-3xl sm:text-4xl font-bold text-home-text-dark tracking-tight mb-6">
               Scale with Enterprise Partnerships
             </h2>
             <p className="text-lg text-home-text-dark/70 leading-relaxed mb-8">
-              Connect with leading Global Capability Centers actively seeking innovative solutions.
+              Connect with leading GCCs actively seeking innovative solutions. Showcase your capabilities and win structured, long-term engagements.
             </p>
             <ul className="space-y-4 mb-10">
               {BULLETS.map((item, i) => (
@@ -49,10 +51,10 @@ export default function ForStartupsSection() {
               ))}
             </ul>
             <Link
-              to="/register"
+              to="/register/form?role=STARTUP"
               className="inline-flex px-6 py-3.5 rounded-lg font-semibold text-white bg-home-accent hover:opacity-95 transition shadow-sm hover:scale-[1.03]"
             >
-              Join as Startup
+              Register as Startup →
             </Link>
           </motion.div>
         </div>

@@ -2,8 +2,9 @@ import HomeNavbar from '@/components/HomeNavbar';
 import HeroSection from '@/pages/home/HeroSection';
 import ForEnterprisesSection from '@/pages/home/ForEnterprisesSection';
 import ForStartupsSection from '@/pages/home/ForStartupsSection';
-import StatsSection from '@/pages/home/StatsSection';
+import ForIncubationSection from '@/pages/home/ForIncubationSection';
 import HowItWorksSection from '@/pages/home/HowItWorksSection';
+import StatsSection from '@/pages/home/StatsSection';
 import CTASection from '@/pages/home/CTASection';
 import FooterSection from '@/pages/home/FooterSection';
 
@@ -15,6 +16,7 @@ export default function Home() {
         <HeroSection />
         <ForEnterprisesSection />
         <ForStartupsSection />
+        <ForIncubationSection />
         <HowItWorksSection />
         <StatsSection />
         <CTASection />

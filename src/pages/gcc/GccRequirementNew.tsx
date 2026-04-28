@@ -16,14 +16,14 @@ function todayYYYYMMDD(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-const CONTROLLED_DISCLOSURE = `GCC-Startup Connect operates under a controlled disclosure framework.
+const CONTROLLED_DISCLOSURE = `TechCovate operates under a controlled disclosure framework.
 Company identities are not disclosed to startups until an engagement offer has been formally accepted through the platform.
 
-Users must not include any information that directly or indirectly identifies their organization within the requirement submission. GCC-Startup Connect shall not be liable for disclosures resulting from user-submitted content.`;
+Users must not include any information that directly or indirectly identifies their organization within the requirement submission. TechCovate shall not be liable for disclosures resulting from user-submitted content.`;
 
 const NDA_AGREEMENT = `Confidentiality & NDA Agreement
 
-By posting a requirement on GCC-Startup Connect, you acknowledge and agree to the following:
+By posting a requirement on TechCovate, you acknowledge and agree to the following:
 
 Anonymized Posting
 Your requirement will be visible to startups without revealing your organization's identity.
@@ -42,7 +42,7 @@ If you select "NDA Required":
 • Confidential information may only be shared after the NDA is fully executed
 
 User Responsibility
-You are solely responsible for ensuring that the content submitted is appropriate for publication in an anonymized marketplace. GCC-Startup Connect is not liable for disclosures made by the user within the requirement text.`;
+You are solely responsible for ensuring that the content submitted is appropriate for publication in an anonymized marketplace. TechCovate is not liable for disclosures made by the user within the requirement text.`;
 
 export default function GccRequirementNew() {
   const navigate = useNavigate();
@@ -125,7 +125,7 @@ export default function GccRequirementNew() {
             <div className="text-sm text-amber-900 dark:text-amber-100">
               <p className="font-semibold mb-1">Controlled disclosure</p>
               <p>
-                Do not include any information that directly or indirectly identifies your organization. Company identities are disclosed only after an engagement is formally accepted. GCC-Startup Connect is not liable for disclosures in user-submitted content.
+                Do not include any information that directly or indirectly identifies your organization. Company identities are disclosed only after an engagement is formally accepted. TechCovate is not liable for disclosures in user-submitted content.
               </p>
             </div>
           </div>

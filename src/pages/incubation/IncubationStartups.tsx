@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Building2, RefreshCw } from 'lucide-react';
+import { Building2, RefreshCw, ToggleLeft, ToggleRight } from 'lucide-react';
 
 type ApprovalFilter = 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED';
 
@@ -13,6 +13,7 @@ const initialForm = {
   company_name: '',
   email: '',
   password: '',
+  pan_number: '',
   company_website: '',
   description: '',
   gst_number: '',
@@ -26,6 +27,7 @@ export default function IncubationStartups() {
   const [startups, setStartups] = useState<IncubationStartupListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [toggling, setToggling] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [form, setForm] = useState(initialForm);
@@ -50,6 +52,19 @@ export default function IncubationStartups() {
     setForm((current) => ({ ...current, [field]: value }));
   };
 
+  const handleToggleLogin = async (startup: IncubationStartupListItem) => {
+    if (startup.approval_status !== 'APPROVED') return;
+    setToggling(startup.id);
+    try {
+      const result = await incubationApi.toggleStartupLogin(startup.id, !startup.login_enabled);
+      setStartups((prev) => prev.map((s) => s.id === startup.id ? { ...s, login_enabled: result.login_enabled } : s));
+    } catch {
+      // silent — user will see no change
+    } finally {
+      setToggling(null);
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setSubmitting(true);
@@ -61,6 +76,7 @@ export default function IncubationStartups() {
         company_name: form.company_name.trim() || undefined,
         email: form.email.trim(),
         password: form.password,
+        pan_number: form.pan_number.trim().toUpperCase(),
         company_website: form.company_website.trim() || undefined,
         description: form.description.trim(),
         gst_number: form.gst_number.trim() || undefined,
@@ -129,6 +145,20 @@ export default function IncubationStartups() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="startup_pan">Company PAN Number *</Label>
+              <Input
+                id="startup_pan"
+                value={form.pan_number}
+                onChange={(e) => handleChange('pan_number', e.target.value.toUpperCase())}
+                required
+                maxLength={10}
+                placeholder="e.g. AABCE1234F"
+                className="tracking-widest uppercase"
+              />
+              <p className="text-xs text-muted-foreground">5 letters + 4 digits + 1 letter</p>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="startup_description">Short description *</Label>
               <Textarea id="startup_description" rows={4} value={form.description} onChange={(e) => handleChange('description', e.target.value)} required />
             </div>
@@ -139,7 +169,7 @@ export default function IncubationStartups() {
                 <Input id="startup_website" type="url" value={form.company_website} onChange={(e) => handleChange('company_website', e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="startup_gst">GSTN</Label>
+                <Label htmlFor="startup_gst">GSTN <span className="text-muted-foreground">(optional)</span></Label>
                 <Input id="startup_gst" value={form.gst_number} onChange={(e) => handleChange('gst_number', e.target.value)} />
               </div>
             </div>
@@ -195,12 +225,15 @@ export default function IncubationStartups() {
                 {startups.map((startup) => (
                   <div key={startup.id} className="rounded-lg border border-border p-4">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <Building2 className="h-4 w-4 text-primary" />
                           <span className="font-medium">{startup.company_name || startup.name}</span>
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">{startup.email}</p>
+                        {startup.pan_number && (
+                          <p className="text-xs text-muted-foreground mt-1 font-mono tracking-wider">PAN: {startup.pan_number}</p>
+                        )}
                         {startup.solution_description && (
                           <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{startup.solution_description}</p>
                         )}
@@ -208,17 +241,37 @@ export default function IncubationStartups() {
                           Added {new Date(startup.created_at).toLocaleDateString()}
                         </p>
                       </div>
-                      <span
-                        className={
-                          startup.approval_status === 'APPROVED'
-                            ? 'chip bg-green-500/15 text-green-700'
-                            : startup.approval_status === 'PENDING'
-                              ? 'chip bg-amber-500/15 text-amber-700'
-                              : 'chip bg-destructive/15 text-destructive'
-                        }
-                      >
-                        {startup.approval_status}
-                      </span>
+                      <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                        <span
+                          className={
+                            startup.approval_status === 'APPROVED'
+                              ? 'chip bg-green-500/15 text-green-700'
+                              : startup.approval_status === 'PENDING'
+                                ? 'chip bg-amber-500/15 text-amber-700'
+                                : 'chip bg-destructive/15 text-destructive'
+                          }
+                        >
+                          {startup.approval_status}
+                        </span>
+                        {startup.approval_status === 'APPROVED' && (
+                          <button
+                            type="button"
+                            onClick={() => handleToggleLogin(startup)}
+                            disabled={toggling === startup.id}
+                            title={startup.login_enabled ? 'Disable login' : 'Enable login'}
+                            className={`flex items-center gap-1.5 text-xs font-medium transition rounded px-2 py-1 ${
+                              startup.login_enabled
+                                ? 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-500/10'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                            }`}
+                          >
+                            {startup.login_enabled
+                              ? <><ToggleRight className="h-4 w-4" /> Login on</>
+                              : <><ToggleLeft className="h-4 w-4" /> Login off</>
+                            }
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}

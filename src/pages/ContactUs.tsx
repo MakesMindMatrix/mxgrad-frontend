@@ -43,7 +43,7 @@ export default function ContactUs() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mt-4 text-lg text-white/80 max-w-2xl"
           >
-            Get in touch with the GCC-Startup Connect team. We’re here to help with partnerships, demos, and platform support.
+            Get in touch with the TechCovate team. We’re here to help with partnerships, demos, and platform support.
           </motion.p>
         </div>
       </section>
@@ -132,10 +132,10 @@ export default function ContactUs() {
           <p className="text-white/50 text-sm">
             {POWERED_BY}
           </p>
-          <p className="text-white/50 text-sm mt-1">© GCC-Startup Connect</p>
+          <p className="text-white/50 text-sm mt-1">© TechCovate</p>
           <div className="mt-4">
             <Link to="/" className="text-white/60 hover:text-white text-sm transition">
-              GCC-Startup Connect
+              TechCovate
             </Link>
           </div>
         </div>

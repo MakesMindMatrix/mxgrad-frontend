@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const BULLETS = [
-  'Post Strategic Requirements',
-  'Discover Top Innovation Partners',
-  'Accelerate Innovation Cycles',
+  'Post innovation requirements with full control over scope, budget, and NDA',
+  'Discover verified deep-tech startups filtered by industry, stack, and stage',
+  'Review proposals, accept interests, and track active collaborations',
+  'Admin-curated process ensures every startup is verified before you see them',
 ];
 
 export default function ForEnterprisesSection() {
@@ -20,11 +21,12 @@ export default function ForEnterprisesSection() {
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.6 }}
           >
+            <p className="text-home-accent text-xs font-semibold tracking-widest uppercase mb-3">For GCC / Enterprise</p>
             <h2 className="text-3xl sm:text-4xl font-bold text-home-text-dark tracking-tight mb-6">
               Empower Your Global Capability Center
             </h2>
             <p className="text-lg text-home-text-dark/70 leading-relaxed mb-8">
-              Access a curated network of verified deep-tech startups ready to solve complex business challenges.
+              Access a curated network of verified deep-tech startups and incubation centers ready to solve your most complex innovation challenges.
             </p>
             <ul className="space-y-4 mb-10">
               {BULLETS.map((item, i) => (
@@ -35,10 +37,10 @@ export default function ForEnterprisesSection() {
               ))}
             </ul>
             <Link
-              to="/register"
+              to="/register/form?role=GCC"
               className="inline-flex px-6 py-3.5 rounded-lg font-semibold text-white bg-home-accent hover:opacity-95 transition shadow-sm hover:scale-[1.03]"
             >
-              Get Started as Enterprise
+              Register as Enterprise →
             </Link>
           </motion.div>
           <motion.div
